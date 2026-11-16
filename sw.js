@@ -1,5 +1,5 @@
 // Offline support. Bump VERSION after every change so phones pick up the new files.
-const VERSION = "hmc-v1.1.0";
+const VERSION = "hmc-v1.2.0";
 const CORE = [
   "./",
   "./index.html",

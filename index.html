@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,17 +15,21 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* Layout: sticky header + scrollable tab strip; each tab is a stack of panels, summary first, detail below */
+  /* Layout: sticky header + scrollable tab strip; each tab is a stack of panels, summary first, detail below. Logical properties so RTL and LTR share one sheet. */
   --bg:#F2F5F4; --surface:#FFFFFF; --ink:#14201E; --muted:#5B6967; --line:#D9E2E0;
   --accent:#0A6B63; --accent-soft:#DDEFEC; --accent-ink:#FFFFFF;
   --good:#1D7A3B; --warn:#A76300; --bad:#B42318;
   --good-soft:#E3F3E8; --warn-soft:#FFF1D9; --bad-soft:#FCE6E3;
-  --display:"Sora", ui-sans-serif, system-ui, sans-serif;
-  --body:"IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --display:"Sora", "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
+  --body:"IBM Plex Sans", "IBM Plex Sans Arabic", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
   color-scheme: light;
+}
+:root[lang="ar"]{
+  --display:"IBM Plex Sans Arabic", "Sora", ui-sans-serif, system-ui, Tahoma, sans-serif;
+  --body:"IBM Plex Sans Arabic", "IBM Plex Sans", ui-sans-serif, system-ui, Tahoma, sans-serif;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
@@ -44,9 +48,10 @@
   color-scheme: dark;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
-h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.25}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.3}
 h1{font-size:18px;font-weight:700}
 h2{font-size:17px;font-weight:600}
 h3{font-size:15px;font-weight:600}
@@ -57,7 +62,7 @@ button,select,input,textarea{font:inherit;color:inherit}
 
 header.top{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
 .bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;max-width:1200px;margin:0 auto}
-.brand{display:flex;flex-direction:column;gap:2px;margin-right:auto;min-width:0}
+.brand{display:flex;flex-direction:column;gap:2px;margin-inline-end:auto;min-width:0}
 .brand small{color:var(--muted);font-size:12px}
 .pill{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;white-space:nowrap}
 .pill.demo{background:var(--warn-soft);color:var(--warn)}
@@ -67,13 +72,16 @@ header.top{position:sticky;top:0;z-index:5;background:var(--surface);border-bott
 .pill.info{background:var(--accent-soft);color:var(--accent)}
 .pill.good{background:var(--good-soft);color:var(--good)}
 .period{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.lang{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.lang button{border:0;background:var(--surface);padding:6px 11px;cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);min-height:34px}
+.lang button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
 select,input[type=text],input[type=number],input[type=date],textarea{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 10px;min-height:36px}
 textarea{width:100%;resize:vertical;min-height:80px}
 nav.tabs{display:flex;gap:2px;overflow-x:auto;padding:0 12px;max-width:1200px;margin:0 auto;scrollbar-width:none}
 nav.tabs::-webkit-scrollbar{display:none}
 nav.tabs button{background:none;border:0;border-bottom:3px solid transparent;padding:10px 12px;font-weight:500;color:var(--muted);cursor:pointer;white-space:nowrap}
 nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
-nav.tabs button .count{font-size:11px;background:var(--bad-soft);color:var(--bad);border-radius:999px;padding:0 6px;margin-left:4px;font-weight:600}
+nav.tabs button .count{font-size:11px;background:var(--bad-soft);color:var(--bad);border-radius:999px;padding:0 6px;margin-inline-start:4px;font-weight:600}
 
 main{max-width:1200px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:16px}
 section.tab{display:none;flex-direction:column;gap:16px}
@@ -90,14 +98,13 @@ section.tab.active{display:flex}
 .kpi .delta{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
 .up-good,.down-good{color:var(--good)} .up-bad,.down-bad{color:var(--bad)} .flat{color:var(--muted)}
 .chart{position:relative;height:260px}
-.chart.tall{height:320px}
 
 .issues{display:flex;flex-direction:column;gap:10px}
-.issue{border:1px solid var(--line);border-left:4px solid var(--muted);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
-.issue.critical{border-left-color:var(--bad)} .issue.warning{border-left-color:var(--warn)} .issue.info{border-left-color:var(--accent)}
+.issue{border:1px solid var(--line);border-inline-start:4px solid var(--muted);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.issue.critical{border-inline-start-color:var(--bad)} .issue.warning{border-inline-start-color:var(--warn)} .issue.info{border-inline-start-color:var(--accent)}
 .issue .meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--muted)}
 .issue p{margin:0;font-size:14px}
-.issue ul{margin:0;padding-left:18px;font-size:14px;display:flex;flex-direction:column;gap:3px}
+.issue ul{margin:0;padding-inline-start:18px;font-size:14px;display:flex;flex-direction:column;gap:4px}
 .impact{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 
@@ -110,12 +117,13 @@ section.tab.active{display:flex}
 
 .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
 table{border-collapse:collapse;width:100%;font-size:13.5px}
-th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:start;white-space:nowrap}
 th{font-weight:600;color:var(--muted);font-size:12px;background:var(--bg);position:sticky;top:0}
-td.n,th.n{text-align:right}
+td.n,th.n{text-align:end}
 tr:last-child td{border-bottom:0}
 td.wrap{white-space:normal;min-width:220px}
-.heat td.h{text-align:right;font-variant-numeric:tabular-nums}
+.heat td.h{text-align:end;font-variant-numeric:tabular-nums}
+code{direction:ltr;unicode-bidi:embed}
 
 .opps{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}
 .opp{border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:6px}
@@ -130,16 +138,15 @@ form.inline label,.field{display:flex;flex-direction:column;gap:4px;font-size:12
 form.inline label input,form.inline label select,.field input,.field select{color:var(--ink);font-size:14px}
 details summary{cursor:pointer;font-weight:600}
 .note{font-size:13px;color:var(--muted);background:var(--bg);border-radius:8px;padding:10px 12px}
- .drop{border:2px dashed var(--accent);border-radius:12px;background:var(--accent-soft);padding:20px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;cursor:pointer}
+.drop{border:2px dashed var(--accent);border-radius:12px;background:var(--accent-soft);padding:20px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;cursor:pointer}
 .drop.over{background:var(--surface);border-style:solid}
 .drop strong{font-family:var(--display);font-size:16px}
 .drop span{font-size:13px;color:var(--muted)}
 .onboard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));align-items:center}
-.onboard ol{margin:6px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.onboard ol{margin:6px 0 0;padding-inline-start:20px;display:flex;flex-direction:column;gap:4px;font-size:14px}
 .toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20;max-width:90vw}
 .toast.show{opacity:1}
-.answer{white-space:pre-wrap;font-size:14.5px;line-height:1.6;max-width:75ch}
-.answer[dir=rtl]{text-align:right}
+.answer{white-space:pre-wrap;font-size:14.5px;line-height:1.7;max-width:75ch}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chip{border:1px solid var(--line);border-radius:999px;padding:5px 11px;background:var(--surface);cursor:pointer;font-size:13px}
 .chip:hover{border-color:var(--accent)}
@@ -153,26 +160,30 @@ details summary{cursor:pointer;font-weight:600}
 <header class="top">
   <div class="bar">
     <div class="brand">
-      <h1 id="hospName">Hospital Marketing Compass</h1>
-      <small><span id="dataBadge" class="pill demo">Demo data</span> <span id="rangeLabel"></span></small>
+      <h1 id="hospName"></h1>
+      <small><span id="dataBadge" class="pill demo"></span> <span id="rangeLabel"></span></small>
     </div>
-    <button class="btn primary" id="hdrUpload" type="button">Upload data</button>
+    <div class="lang" role="group" aria-label="Language / اللغة">
+      <button type="button" data-lang="ar" lang="ar">عربي</button>
+      <button type="button" data-lang="en" lang="en">English</button>
+    </div>
+    <button class="btn primary" id="hdrUpload" type="button"></button>
     <input type="file" id="quickFile" accept=".xlsx,.xls,.csv" hidden>
-    <label class="period" for="periodSel">Compare last
+    <label class="period" for="periodSel"><span data-i18n="compareLast"></span>
       <select id="periodSel">
-        <option value="3">3 months</option>
-        <option value="6">6 months</option>
+        <option value="3" data-i18n="m3"></option>
+        <option value="6" data-i18n="m6"></option>
       </select>
     </label>
   </div>
   <nav class="tabs" role="tablist">
-    <button role="tab" data-tab="overview" aria-selected="true">Overview</button>
-    <button role="tab" data-tab="problems" aria-selected="false">Problems<span class="count" id="issueCount"></span></button>
-    <button role="tab" data-tab="audience" aria-selected="false">Target audience</button>
-    <button role="tab" data-tab="campaigns" aria-selected="false">Campaigns</button>
-    <button role="tab" data-tab="plan" aria-selected="false">Action plan</button>
-    <button role="tab" data-tab="advisor" aria-selected="false">AI advisor</button>
-    <button role="tab" data-tab="data" aria-selected="false">Data &amp; settings</button>
+    <button role="tab" data-tab="overview" aria-selected="true" data-i18n="tabOverview"></button>
+    <button role="tab" data-tab="problems" aria-selected="false"><span data-i18n="tabProblems"></span><span class="count" id="issueCount"></span></button>
+    <button role="tab" data-tab="audience" aria-selected="false" data-i18n="tabAudience"></button>
+    <button role="tab" data-tab="campaigns" aria-selected="false" data-i18n="tabCampaigns"></button>
+    <button role="tab" data-tab="plan" aria-selected="false" data-i18n="tabPlan"></button>
+    <button role="tab" data-tab="advisor" aria-selected="false" data-i18n="tabAdvisor"></button>
+    <button role="tab" data-tab="data" aria-selected="false" data-i18n="tabData"></button>
   </nav>
 </header>
 
@@ -181,38 +192,37 @@ details summary{cursor:pointer;font-weight:600}
   <section class="tab active" id="tab-overview">
     <div class="onboard" id="onboard">
       <div>
-        <h2>Start with your hospital's data</h2>
-        <p class="hint">You are looking at demo numbers. Three steps to see your own:</p>
+        <h2 data-i18n="obTitle"></h2>
+        <p class="hint" data-i18n="obSub"></p>
         <ol>
-          <li><button class="btn small" type="button" id="obTemplate">Download the Excel template</button></li>
-          <li>Fill it with monthly summary numbers (no patient names or file numbers).</li>
-          <li>Drop the file in the box. The whole app updates at once.</li>
+          <li><button class="btn small" type="button" id="obTemplate" data-i18n="obStep1"></button></li>
+          <li data-i18n="obStep2"></li>
+          <li data-i18n="obStep3"></li>
         </ol>
       </div>
-      <div class="drop" id="dropZone" role="button" tabindex="0" aria-label="Upload Excel or CSV file">
-        <strong>Drop your Excel file here</strong>
-        <span>or click to choose a file · .xlsx, .xls, .csv</span>
-        <span id="dropMsg"></span>
+      <div class="drop" id="dropZone" role="button" tabindex="0">
+        <strong data-i18n="dropTitle"></strong>
+        <span data-i18n="dropSub"></span>
       </div>
     </div>
     <div class="kpis" id="kpis"></div>
     <div class="grid g2">
       <div class="panel">
-        <div class="panel-head"><h2>Patient visits by month</h2><p>Attended visits and new patients</p></div>
+        <div class="panel-head"><h2 data-i18n="chTrendT"></h2><p data-i18n="chTrendS"></p></div>
         <div class="chart"><canvas id="chTrend"></canvas></div>
       </div>
       <div class="panel">
-        <div class="panel-head"><h2>Capacity used by department</h2><p id="utilHint"></p></div>
+        <div class="panel-head"><h2 data-i18n="chUtilT"></h2><p id="utilHint"></p></div>
         <div class="chart"><canvas id="chUtil"></canvas></div>
       </div>
     </div>
     <div class="grid g2">
       <div class="panel">
-        <div class="panel-head"><h2>Where new patients come from</h2><p>Share of new patients, selected period</p></div>
+        <div class="panel-head"><h2 data-i18n="chSrcT"></h2><p data-i18n="chSrcS"></p></div>
         <div class="chart"><canvas id="chSources"></canvas></div>
       </div>
       <div class="panel">
-        <div class="panel-head"><h2>Top problems right now</h2><button class="btn small" data-goto="problems">See all</button></div>
+        <div class="panel-head"><h2 data-i18n="topIssuesT"></h2><button class="btn small" data-goto="problems" data-i18n="seeAll"></button></div>
         <div class="issues" id="topIssues"></div>
       </div>
     </div>
@@ -222,16 +232,16 @@ details summary{cursor:pointer;font-weight:600}
   <section class="tab" id="tab-problems">
     <div class="panel">
       <div class="panel-head">
-        <div><h2>Problems that need marketing work</h2><p>Found automatically from the data. Thresholds can be changed under Data &amp; settings.</p></div>
-        <select id="sevFilter" aria-label="Filter by severity">
-          <option value="all">All severities</option><option value="critical">Critical only</option><option value="warning">Warnings only</option><option value="info">Opportunities</option>
+        <div><h2 data-i18n="probT"></h2><p data-i18n="probS"></p></div>
+        <select id="sevFilter">
+          <option value="all" data-i18n="sevAll"></option><option value="critical" data-i18n="sevCrit"></option><option value="warning" data-i18n="sevWarn"></option><option value="info" data-i18n="sevInfo"></option>
         </select>
       </div>
-      <p class="note">Monthly impact figures are <b>estimates</b>: they assume the gap could be closed at the department's average revenue per visit. Use them to rank problems, not as forecasts.</p>
+      <p class="note" data-i18n-html="probNote"></p>
       <div class="issues" id="allIssues"></div>
     </div>
     <div class="panel">
-      <div class="panel-head"><h2>Department scorecard</h2><p>Selected period</p></div>
+      <div class="panel-head"><h2 data-i18n="scoreT"></h2><p data-i18n="selPeriod"></p></div>
       <div class="tablewrap"><table id="deptTable"></table></div>
     </div>
   </section>
@@ -239,17 +249,17 @@ details summary{cursor:pointer;font-weight:600}
   <!-- AUDIENCE -->
   <section class="tab" id="tab-audience">
     <div class="panel">
-      <div class="panel-head"><div><h2>Who to target next</h2><p>Segments ranked by value per patient, growth, and free capacity in their department</p></div></div>
+      <div class="panel-head"><div><h2 data-i18n="oppT"></h2><p data-i18n="oppS"></p></div></div>
       <div class="opps" id="opps"></div>
     </div>
     <div class="panel">
       <div class="panel-head">
-        <h2>Explore patient segments</h2>
+        <h2 data-i18n="segT"></h2>
         <div class="row">
-          <label class="field" for="segDim">Group by
-            <select id="segDim"><option value="age_group">Age group</option><option value="area">Area</option><option value="payer">Payer</option><option value="department">Department</option></select>
+          <label class="field" for="segDim"><span data-i18n="groupBy"></span>
+            <select id="segDim"><option value="age_group" data-i18n="dimAge"></option><option value="area" data-i18n="dimArea"></option><option value="payer" data-i18n="dimPayer"></option><option value="department" data-i18n="dimDept"></option></select>
           </label>
-          <label class="field" for="segDept">Department
+          <label class="field" for="segDept"><span data-i18n="dimDept"></span>
             <select id="segDept"></select>
           </label>
         </div>
@@ -260,7 +270,7 @@ details summary{cursor:pointer;font-weight:600}
       </div>
     </div>
     <div class="panel">
-      <div class="panel-head"><h2>Department × age group</h2><p>Share of each department's patients</p></div>
+      <div class="panel-head"><h2 data-i18n="heatT"></h2><p data-i18n="heatS"></p></div>
       <div class="tablewrap"><table class="heat" id="heat"></table></div>
     </div>
   </section>
@@ -270,29 +280,29 @@ details summary{cursor:pointer;font-weight:600}
     <div class="kpis" id="campKpis"></div>
     <div class="grid g2">
       <div class="panel">
-        <div class="panel-head"><h2>Return per riyal by channel</h2><p>Revenue ÷ spend. Below 1.0 loses money.</p></div>
+        <div class="panel-head"><h2 data-i18n="chChT"></h2><p data-i18n="chChS"></p></div>
         <div class="chart"><canvas id="chChannel"></canvas></div>
       </div>
       <div class="panel">
-        <div class="panel-head"><h2>Cost per booking by channel</h2><p id="cpbHint"></p></div>
+        <div class="panel-head"><h2 data-i18n="chCpbT"></h2><p id="cpbHint"></p></div>
         <div class="chart"><canvas id="chCpb"></canvas></div>
       </div>
     </div>
     <div class="panel">
-      <div class="panel-head"><h2>All campaigns</h2><p>Sorted by return on spend</p></div>
+      <div class="panel-head"><h2 data-i18n="campAllT"></h2><p data-i18n="campAllS"></p></div>
       <div class="tablewrap"><table id="campTable"></table></div>
       <details>
-        <summary>Add a campaign</summary>
+        <summary data-i18n="addCamp"></summary>
         <form class="inline" id="campForm" style="margin-top:12px">
-          <label for="cf-name">Name<input type="text" id="cf-name" required></label>
-          <label for="cf-channel">Channel<input type="text" id="cf-channel" list="channelList" required></label>
-          <label for="cf-dept">Department<select id="cf-dept"></select></label>
-          <label for="cf-month">Month (YYYY-MM)<input type="text" id="cf-month" placeholder="2026-11" pattern="\d{4}-\d{2}" required></label>
-          <label for="cf-spend">Spend<input type="number" id="cf-spend" min="0" required></label>
-          <label for="cf-leads">Leads<input type="number" id="cf-leads" min="0" required></label>
-          <label for="cf-bookings">Bookings<input type="number" id="cf-bookings" min="0" required></label>
-          <label for="cf-revenue">Revenue<input type="number" id="cf-revenue" min="0" required></label>
-          <button class="btn primary" type="submit">Add campaign</button>
+          <label for="cf-name"><span data-i18n="fName"></span><input type="text" id="cf-name" required></label>
+          <label for="cf-channel"><span data-i18n="fChannel"></span><input type="text" id="cf-channel" list="channelList" required></label>
+          <label for="cf-dept"><span data-i18n="dimDept"></span><select id="cf-dept"></select></label>
+          <label for="cf-month"><span data-i18n="fMonth"></span><input type="text" id="cf-month" placeholder="2026-11" pattern="\d{4}-\d{2}" dir="ltr" required></label>
+          <label for="cf-spend"><span data-i18n="fSpend"></span><input type="number" id="cf-spend" min="0" required></label>
+          <label for="cf-leads"><span data-i18n="fLeads"></span><input type="number" id="cf-leads" min="0" required></label>
+          <label for="cf-bookings"><span data-i18n="fBookings"></span><input type="number" id="cf-bookings" min="0" required></label>
+          <label for="cf-revenue"><span data-i18n="fRevenue"></span><input type="number" id="cf-revenue" min="0" required></label>
+          <button class="btn primary" type="submit" data-i18n="addCampBtn"></button>
         </form>
         <datalist id="channelList"></datalist>
       </details>
@@ -302,14 +312,14 @@ details summary{cursor:pointer;font-weight:600}
   <!-- PLAN -->
   <section class="tab" id="tab-plan">
     <div class="panel">
-      <div class="panel-head"><div><h2>Action plan</h2><p>Add actions from the Problems tab or write your own. Saved in this browser.</p></div><span id="planStats" class="hint"></span></div>
+      <div class="panel-head"><div><h2 data-i18n="planT"></h2><p data-i18n="planS"></p></div><span id="planStats" class="hint"></span></div>
       <div class="tablewrap"><table id="planTable"></table></div>
       <form class="inline" id="planForm">
-        <label for="pf-title" style="grid-column:span 2">Action<input type="text" id="pf-title" required placeholder="e.g. Meet HR of 3 nearby companies about physio packages"></label>
-        <label for="pf-dept">Department<select id="pf-dept"></select></label>
-        <label for="pf-owner">Owner<input type="text" id="pf-owner" placeholder="Name"></label>
-        <label for="pf-due">Due date<input type="date" id="pf-due"></label>
-        <button class="btn primary" type="submit">Add action</button>
+        <label for="pf-title" style="grid-column:span 2"><span data-i18n="fAction"></span><input type="text" id="pf-title" required data-i18n-ph="fActionPh"></label>
+        <label for="pf-dept"><span data-i18n="dimDept"></span><select id="pf-dept"></select></label>
+        <label for="pf-owner"><span data-i18n="fOwner"></span><input type="text" id="pf-owner" data-i18n-ph="fOwnerPh"></label>
+        <label for="pf-due"><span data-i18n="fDue"></span><input type="date" id="pf-due"></label>
+        <button class="btn primary" type="submit" data-i18n="addActBtn"></button>
       </form>
     </div>
   </section>
@@ -317,58 +327,58 @@ details summary{cursor:pointer;font-weight:600}
   <!-- ADVISOR -->
   <section class="tab" id="tab-advisor">
     <div class="panel">
-      <div class="panel-head"><div><h2>Ask the AI advisor</h2><p>Claude reads a summary of the numbers in this app (no patient names) and answers. Ask in Arabic or English.</p></div></div>
-      <div id="advisorOff" class="note" hidden>The AI advisor is available only when the app is opened inside Claude. Everything else works here, including offline.</div>
+      <div class="panel-head"><div><h2 data-i18n="advT"></h2><p data-i18n="advS"></p></div></div>
+      <div id="advisorOff" class="note" hidden data-i18n="advOff"></div>
       <div id="advisorOn">
         <div class="chips" id="presets"></div>
-        <label for="askBox" class="hint" style="display:block;margin:10px 0 4px">Your question</label>
-        <textarea id="askBox" placeholder="ما أفضل 3 حملات أبدأ فيها الشهر القادم بميزانية 50 ألف ريال؟"></textarea>
-        <div class="row" style="margin-top:10px"><button class="btn primary" id="askBtn">Ask</button><button class="btn" id="stopBtn" hidden>Stop</button></div>
+        <label for="askBox" class="hint" style="display:block;margin:10px 0 4px" data-i18n="yourQ"></label>
+        <textarea id="askBox" dir="auto" data-i18n-ph="askPh"></textarea>
+        <div class="row" style="margin-top:10px"><button class="btn primary" id="askBtn" data-i18n="ask"></button><button class="btn" id="stopBtn" hidden data-i18n="stop"></button></div>
       </div>
-      <div class="answer" id="answer"></div>
+      <div class="answer" id="answer" dir="auto"></div>
     </div>
   </section>
 
   <!-- DATA -->
   <section class="tab" id="tab-data">
     <div class="panel">
-      <div class="panel-head"><div><h2>Load your hospital's data</h2><p>Upload one Excel workbook with up to four sheets, or one CSV at a time. Use summary numbers only, no patient names or file numbers.</p></div></div>
+      <div class="panel-head"><div><h2 data-i18n="dataT"></h2><p data-i18n="dataS"></p></div></div>
       <div class="row">
-        <button class="btn primary" id="dlTemplate">Download Excel template</button>
-        <button class="btn" id="dlBlank">Download blank template</button>
+        <button class="btn primary" id="dlTemplate" data-i18n="dlFull"></button>
+        <button class="btn" id="dlBlank" data-i18n="dlBlank"></button>
       </div>
-      <p class="hint" id="dlNote"></p>
+      <p class="hint" data-i18n="dlNote"></p>
       <div class="row">
-        <label class="field" for="importTarget">Import into
+        <label class="field" for="importTarget"><span data-i18n="importInto"></span>
           <select id="importTarget">
-            <option value="auto">Auto: match sheet names</option>
+            <option value="auto" data-i18n="importAuto"></option>
             <option value="depts">Departments_Monthly</option>
             <option value="sources">Sources_Monthly</option>
             <option value="segments">Segments</option>
             <option value="campaigns">Campaigns</option>
           </select>
         </label>
-        <label class="field" for="fileIn">File (.xlsx, .xls or .csv)
+        <label class="field" for="fileIn"><span data-i18n="fileLbl"></span>
           <input type="file" id="fileIn" accept=".xlsx,.xls,.csv">
         </label>
       </div>
-      <div id="importLog" class="note" hidden></div>
+      <div id="importLog" class="note" hidden style="white-space:pre-wrap"></div>
       <div class="tablewrap"><table id="schemaTable"></table></div>
-      <div class="row"><button class="btn danger" id="resetDemo">Reset to demo data</button></div>
+      <div class="row"><button class="btn danger" id="resetDemo" data-i18n="resetDemo"></button></div>
     </div>
     <div class="panel">
-      <div class="panel-head"><h2>Settings and thresholds</h2><p>Problems are flagged when a department crosses these lines</p></div>
+      <div class="panel-head"><h2 data-i18n="setT"></h2><p data-i18n="setS"></p></div>
       <form class="inline" id="setForm">
-        <label for="s-hospital">Hospital name<input type="text" id="s-hospital"></label>
-        <label for="s-currency">Currency<input type="text" id="s-currency"></label>
-        <label for="s-utilLow">Idle capacity below (%)<input type="number" id="s-utilLow" min="0" max="100"></label>
-        <label for="s-utilHigh">Near full above (%)<input type="number" id="s-utilHigh" min="0" max="100"></label>
-        <label for="s-noShow">No-show above (%)<input type="number" id="s-noShow" min="0" max="100"></label>
-        <label for="s-conv">Inquiry conversion below (%)<input type="number" id="s-conv" min="0" max="100"></label>
-        <label for="s-decline">Visit drop worse than (%)<input type="number" id="s-decline" min="0" max="100"></label>
-        <label for="s-concentration">One payer/source above (%)<input type="number" id="s-concentration" min="0" max="100"></label>
-        <label for="s-roas">Campaign return below (×)<input type="number" id="s-roas" min="0" step="0.1"></label>
-        <button class="btn primary" type="submit">Save settings</button>
+        <label for="s-hospital"><span data-i18n="sHospital"></span><input type="text" id="s-hospital"></label>
+        <label for="s-currency"><span data-i18n="sCurrency"></span><input type="text" id="s-currency"></label>
+        <label for="s-utilLow"><span data-i18n="sUtilLow"></span><input type="number" id="s-utilLow" min="0" max="100"></label>
+        <label for="s-utilHigh"><span data-i18n="sUtilHigh"></span><input type="number" id="s-utilHigh" min="0" max="100"></label>
+        <label for="s-noShow"><span data-i18n="sNoShow"></span><input type="number" id="s-noShow" min="0" max="100"></label>
+        <label for="s-conv"><span data-i18n="sConv"></span><input type="number" id="s-conv" min="0" max="100"></label>
+        <label for="s-decline"><span data-i18n="sDecline"></span><input type="number" id="s-decline" min="0" max="100"></label>
+        <label for="s-concentration"><span data-i18n="sConc"></span><input type="number" id="s-concentration" min="0" max="100"></label>
+        <label for="s-roas"><span data-i18n="sRoas"></span><input type="number" id="s-roas" min="0" step="0.1"></label>
+        <button class="btn primary" type="submit" data-i18n="saveSet"></button>
       </form>
     </div>
   </section>
@@ -379,38 +389,229 @@ details summary{cursor:pointer;font-weight:600}
 <script src="vendor/xlsx.full.min.js"></script>
 <script>
 "use strict";
-/* ---------- helpers ---------- */
+/* ================= i18n ================= */
+const I18N = {
+en:{
+  appName:"Hospital Marketing Compass", demoBadge:"Demo data", liveBadge:"Your data", period:"Period: {a} to {b}", noMonthly:"No monthly data yet",
+  compareLast:"Compare last", m3:"3 months", m6:"6 months", upload:"Upload data", update:"Update data",
+  tabOverview:"Overview", tabProblems:"Problems", tabAudience:"Target audience", tabCampaigns:"Campaigns", tabPlan:"Action plan", tabAdvisor:"AI advisor", tabData:"Data & settings",
+  obTitle:"Start with your hospital's data", obSub:"You are looking at demo numbers. Three steps to see your own:",
+  obStep1:"Download the Excel template", obStep2:"Fill it with monthly summary numbers (no patient names or file numbers).", obStep3:"Drop the file in the box. The whole app updates at once.",
+  dropTitle:"Drop your Excel file here", dropSub:"or click to choose a file · .xlsx, .xls, .csv",
+  chTrendT:"Patient visits by month", chTrendS:"Attended visits and new patients", chUtilT:"Capacity used by department", utilHint:"Red below {lo}%, amber above {hi}%",
+  chSrcT:"Where new patients come from", chSrcS:"Share of new patients, selected period", topIssuesT:"Top problems right now", seeAll:"See all",
+  kVisits:"Patient visits / month", kNew:"New patients / month", kRev:"Revenue / month", kUtil:"Capacity used", kNoShow:"No-show rate", kConv:"Inquiry → patient", kRoas:"Campaign return",
+  dNoPrev:"no earlier period", dFlat:"flat vs previous", dVs:"vs previous", pts:" pts", spent:"{v} spent", noCampPeriod:"no campaigns in period",
+  sAttended:"Attended visits", sNew:"New patients", sUtil:"Capacity used", sShare:"Share", patients:"patients",
+  noSources:"No source data. Add the Sources_Monthly sheet.", noIssues:"No problems crossed your thresholds.", chartFail:"Chart library did not load. Check your connection and reload.",
+  probT:"Problems that need marketing work", probS:"Found automatically from the data. Thresholds can be changed under Data & settings.",
+  sevAll:"All severities", sevCrit:"Critical only", sevWarn:"Warnings only", sevInfo:"Opportunities",
+  probNote:"Monthly impact figures are <b>estimates</b>: they assume the gap could be closed at the department's average revenue per visit. Use them to rank problems, not as forecasts.",
+  nothingFilter:"Nothing here for this filter.", scoreT:"Department scorecard", selPeriod:"Selected period",
+  sevLblcritical:"Critical", sevLblwarning:"Warning", sevLblinfo:"Opportunity", perMonth:" / month", estimate:"estimate", addPlan:"+ Plan", added:"✓ Added",
+  thDept:"Department", thVisitsMo:"Visits / mo", thNewMo:"New / mo", thRevMo:"Revenue / mo", thUtil:"Capacity used", thNoShow:"No-show", thConv:"Inquiry → patient", thRpv:"Revenue / visit",
+  "i.idle.t":"{d} uses only {p} of its capacity", "i.idle.e":"About {n} empty slots a month (last {m} months). Line: {l}%.", "i.idle.n":"if filled to {t}%",
+  "i.full.t":"{d} is nearly full ({p})", "i.full.e":"Spending on new patients here adds waiting time, not visits. Line: {l}%.",
+  "i.decline.t":"{d} visits fell {p}", "i.decline.e":"{a} visits a month vs {b} in the {m} months before.", "i.decline.n":"to get back to the previous level",
+  "i.noshow.t":"{d} no-show rate is {p}", "i.noshow.e":"{n} booked patients a month do not come. Line: {l}%.", "i.noshow.n":"if cut to {l}%",
+  "i.conv.t":"Only {p} of {d} inquiries become patients", "i.conv.e":"{a} inquiries a month, {b} new patients. Line: {l}%.", "i.conv.n":"if conversion reached {l}%",
+  "i.payer.t":"{x} brings {p} of revenue", "i.payer.e":"One payer above {l}% means one contract change can hit the whole hospital.",
+  "i.source.t":"{p} of new patients come from {x}", "i.source.e":"Relying on one source above {l}% is risky.",
+  "i.camp.t":"Campaign \"{x}\" returned {r}× its cost", "i.camp.e":"{s} spent, {v} revenue, {b} bookings ({c}, {m}).", "i.camp.n":"lost on this campaign (one-off)",
+  pb:{
+    idle:["Run a targeted offer for this department's best segment (see Target audience).","Offer packages to HR teams of nearby companies (corporate contracts).","Tell referring GPs and specialists that same-week slots are open.","Make the open slots bookable online and on WhatsApp."],
+    decline:["Check recent patient complaints and Google reviews for this department.","Check whether a doctor left or cut clinic hours.","Compare prices and offers of competing clinics nearby.","Invite past patients who are due for follow-up (only those who agreed to receive messages)."],
+    noshow:["Send reminders 48 hours and 3 hours before the visit (patients who agreed to messages).","Call first-time patients the day before to confirm.","Add a one-tap reschedule link to every reminder.","Overbook the slots with the worst no-show rate by a small, safe margin."],
+    conv:["Measure missed calls and response time on calls and WhatsApp.","Give the call center a script: price, insurance coverage, earliest slot.","Call back every inquiry that did not book within 24 hours.","Publish clear package prices for the most asked services."],
+    full:["Pause ads that bring new patients to this department.","Move that budget to departments with free capacity.","Add clinic hours or a doctor before spending more here.","Review pricing: high demand can support premium packages."],
+    payer:["Grow cash / self-pay packages for high-demand services.","Sign more corporate contracts to spread payer risk.","Review contract terms and rejection rates with the largest insurer."],
+    source:["Test one new channel with a small budget each month.","Build a referral program with GPs and past patients.","Track the source of every new patient at registration."],
+    camp:["Pause the campaign or cut its budget.","Check lead quality and how fast leads were called back.","Test a new offer or landing page before relaunching."]
+  },
+  oppT:"Who to target next", oppS:"Segments ranked by value per patient, growth, and free capacity in their department",
+  score:"score", age:"age", whyGrow:"growing {p} year on year", whyShrink:"shrinking {p}, worth winning back", whyValue:"high value: {v} per patient", whyFree:"department only {p} full",
+  whyDefault:"{v} per patient, {p} growth", oppTail:"{n} patients last year, mostly {x}.", noSeg:"Add the Segments sheet to get target suggestions.",
+  segT:"Explore patient segments", groupBy:"Group by", dimAge:"Age group", dimArea:"Area", dimPayer:"Payer", dimDept:"Department", allDepts:"All departments",
+  thPatients:"Patients", thShare:"Share", thGrowth:"Growth", thRevenue:"Revenue", thPerPatient:"Per patient", last12:"Last 12 months", prev12:"12 months before",
+  heatT:"Department × age group", heatS:"Share of each department's patients",
+  cSpend:"Total spend", cRev:"Revenue from campaigns", cRoas:"Return on spend", cCpb:"Cost per booking", cL2B:"Lead → booking",
+  chChT:"Return per riyal by channel", chChS:"Revenue ÷ spend. Below 1.0 loses money.", chCpbT:"Cost per booking by channel", cpbHint:"In {c}. Lower is better.",
+  sReturn:"Return (×)", sCpb:"Cost per booking", campAllT:"All campaigns", campAllS:"Sorted by return on spend",
+  thCampaign:"Campaign", thChannel:"Channel", thMonth:"Month", thSpend:"Spend", thLeads:"Leads", thBookings:"Bookings", thCpb:"Cost / booking", thReturn:"Return",
+  del:"Delete", noCamps:"No campaigns yet.", addCamp:"Add a campaign", fName:"Name", fChannel:"Channel", fMonth:"Month (YYYY-MM)", fSpend:"Spend", fLeads:"Leads", fBookings:"Bookings", fRevenue:"Revenue", addCampBtn:"Add campaign",
+  planT:"Action plan", planS:"Add actions from the Problems tab or write your own. Saved in this browser.", planStats:"{a} of {b} done",
+  thAction:"Action", thOwner:"Owner", thDue:"Due", thStatus:"Status", stTodo:"To do", stDoing:"In progress", stDone:"Done",
+  noActions:"No actions yet. Open Problems and press “+ Plan” next to an action.", fAction:"Action", fActionPh:"e.g. Meet HR of 3 nearby companies about physio packages",
+  fOwner:"Owner", fOwnerPh:"Name", fDue:"Due date", addActBtn:"Add action",
+  advT:"Ask the AI advisor", advS:"Claude reads a summary of the numbers in this app (no patient names) and answers. Ask in Arabic or English.",
+  advOff:"The AI advisor is available only when the app is opened inside Claude. Everything else works here, including offline.",
+  yourQ:"Your question", askPh:"Which 3 campaigns should I start next month with a SAR 50,000 budget?", ask:"Ask", stop:"Stop", thinking:"Thinking…",
+  presets:["What are the 3 marketing problems I should tackle first this month, and why?","Give me a 90-day marketing plan for Physiotherapy.","How should I split a SAR 50,000 budget across channels next month?","Which campaigns should I stop, and what should replace them?","Suggest packages for nearby companies."],
+  advCut:"[Answer was cut short. Ask a narrower question.]", advRate:"Too many questions in a short time. Wait a minute and try again.", advStopped:"[Stopped]", advErr:"The advisor could not answer: {e}. Try again.",
+  dataT:"Load your hospital's data", dataS:"Upload one Excel workbook with up to four sheets, or one CSV at a time. Use summary numbers only, no patient names or file numbers.",
+  dlFull:"Download Excel template", dlBlank:"Download blank template", dlNote:"The full template holds the current numbers, so you can see the expected format, then replace them.",
+  importInto:"Import into", importAuto:"Auto: match sheet names or columns", fileLbl:"File (.xlsx, .xls or .csv)",
+  thSheet:"Sheet", thRowsNow:"Rows now", thColumns:"Columns", thHolds:"What it holds", resetDemo:"Reset to demo data", resetConfirm:"Press again to replace all data with demo data",
+  setT:"Settings and thresholds", setS:"Problems are flagged when a department crosses these lines",
+  sHospital:"Hospital name", sCurrency:"Currency", sUtilLow:"Idle capacity below (%)", sUtilHigh:"Near full above (%)", sNoShow:"No-show above (%)", sConv:"Inquiry conversion below (%)",
+  sDecline:"Visit drop worse than (%)", sConc:"One payer/source above (%)", sRoas:"Campaign return below (×)", saveSet:"Save settings",
+  desc_depts:"One row per department per month. capacity_slots = appointment slots available; booked = appointments made; attended = visits that happened; inquiries = calls/WhatsApp/web requests from new people.",
+  desc_sources:"How new patients heard about you, per month (from registration desk or call center question).",
+  desc_segments:"Grouped patient counts for the last 12 months (patients) and the 12 months before (prev_patients). Groups only, never individual patients.",
+  desc_campaigns:"One row per campaign. leads = people who responded; bookings = appointments from the campaign; revenue = revenue from those bookings.",
+  tReading:"Reading {f}…", tNoXlsx:"The Excel reader did not load. Check your connection and reload the page.",
+  tNoMatch:"No sheet matched by name ({s}) or by columns. Rename the sheets or choose which dataset to import into.",
+  tLoaded:"✓ {s}: {n} rows loaded.", tNoRows:"{s}: no rows found.", tMissing:"{s}: missing column(s) {c}. Expected: {e}.",
+  tBadNum:"{s}: {n} number cell(s) were empty or not numbers and were set to 0.", tBadMonth:"{s}: {n} row(s) have a month that is not YYYY-MM.",
+  tReadErr:"Could not read this file: {e}", toastLoaded:"Loaded {n} sheet(s) from {f}.", toastNone:"No data loaded. See Data & settings for details.", toastReadErr:"Could not read this file.",
+  toastSaved:"File saved.", toastDl:"File downloaded.", toastDlErr:"Could not download the file.", toastNoXlsx:"Excel library did not load.",
+  toastInPlan:"Already in the plan.", toastAdded:"Added to the action plan.", toastCamp:"Campaign added.", toastAct:"Action added.", toastSet:"Settings saved.", toastReset:"Demo data restored. Your action plan was kept.",
+  readmeTitle:"Hospital Marketing Compass — data template", readme1:"Fill each sheet with your hospital's numbers. Keep the column names exactly as they are.",
+  readme2:"Use grouped numbers only. Never put patient names, file numbers or phone numbers in this file.", fileFull:"hospital-marketing-data.xlsx", fileBlank:"hospital-marketing-template.xlsx",
+  all:"All", demoHospital:"Demo Private Hospital"
+},
+ar:{
+  appName:"بوصلة تسويق المستشفى", demoBadge:"بيانات تجريبية", liveBadge:"بياناتك", period:"الفترة: من {a} إلى {b}", noMonthly:"لا توجد بيانات شهرية بعد",
+  compareLast:"قارن آخر", m3:"3 أشهر", m6:"6 أشهر", upload:"ارفع البيانات", update:"حدّث البيانات",
+  tabOverview:"نظرة عامة", tabProblems:"المشاكل", tabAudience:"الفئة المستهدفة", tabCampaigns:"الحملات", tabPlan:"خطة العمل", tabAdvisor:"المستشار الذكي", tabData:"البيانات والإعدادات",
+  obTitle:"ابدأ ببيانات مستشفاك", obSub:"الأرقام المعروضة الآن تجريبية. ثلاث خطوات لترى أرقامك:",
+  obStep1:"حمّل قالب Excel", obStep2:"عبّئه بأرقام شهرية مجمّعة (بدون أسماء مرضى أو أرقام ملفات).", obStep3:"اسحب الملف إلى الصندوق، ويتحدّث التطبيق كله مرة واحدة.",
+  dropTitle:"اسحب ملف Excel هنا", dropSub:"أو اضغط لاختيار ملف · ‎.xlsx ‎.xls ‎.csv",
+  chTrendT:"زيارات المرضى شهرياً", chTrendS:"الزيارات المنفّذة والمرضى الجدد", chUtilT:"استغلال الطاقة لكل قسم", utilHint:"الأحمر أقل من {lo}%، والبرتقالي أعلى من {hi}%",
+  chSrcT:"من أين يأتي المرضى الجدد", chSrcS:"نسبة المرضى الجدد في الفترة المختارة", topIssuesT:"أهم المشاكل الآن", seeAll:"عرض الكل",
+  kVisits:"الزيارات / شهر", kNew:"المرضى الجدد / شهر", kRev:"الإيراد / شهر", kUtil:"استغلال الطاقة", kNoShow:"نسبة عدم الحضور", kConv:"استفسار ← مريض", kRoas:"عائد الحملات",
+  dNoPrev:"لا توجد فترة سابقة", dFlat:"ثابت مقارنة بالسابق", dVs:"عن السابق", pts:" نقطة", spent:"صُرف {v}", noCampPeriod:"لا حملات في الفترة",
+  sAttended:"الزيارات المنفّذة", sNew:"المرضى الجدد", sUtil:"استغلال الطاقة", sShare:"النسبة", patients:"مريض",
+  noSources:"لا توجد بيانات مصادر. أضف ورقة Sources_Monthly.", noIssues:"لا توجد مشكلة تجاوزت الحدود المحددة.", chartFail:"مكتبة الرسوم لم تُحمَّل. تحقق من الاتصال وأعد تحميل الصفحة.",
+  probT:"مشاكل تحتاج عملاً تسويقياً", probS:"تُكتشف تلقائياً من البيانات. تستطيع تعديل الحدود من البيانات والإعدادات.",
+  sevAll:"كل المستويات", sevCrit:"الحرجة فقط", sevWarn:"التحذيرات فقط", sevInfo:"الفرص",
+  probNote:"أرقام الأثر الشهري <b>تقديرية</b>: تفترض أن الفجوة يمكن سدّها بمتوسط إيراد الزيارة في القسم. استخدمها لترتيب المشاكل، لا كتوقعات.",
+  nothingFilter:"لا شيء ضمن هذا التصفية.", scoreT:"بطاقة أداء الأقسام", selPeriod:"الفترة المختارة",
+  sevLblcritical:"حرج", sevLblwarning:"تحذير", sevLblinfo:"فرصة", perMonth:" / شهر", estimate:"تقدير", addPlan:"+ للخطة", added:"✓ أُضيف",
+  thDept:"القسم", thVisitsMo:"زيارات / شهر", thNewMo:"جدد / شهر", thRevMo:"إيراد / شهر", thUtil:"استغلال الطاقة", thNoShow:"عدم الحضور", thConv:"استفسار ← مريض", thRpv:"إيراد الزيارة",
+  "i.idle.t":"قسم {d} يستغل {p} فقط من طاقته", "i.idle.e":"قرابة {n} موعد فارغ شهرياً (آخر {m} أشهر). الحد: {l}%.", "i.idle.n":"لو ارتفع الاستغلال إلى {t}%",
+  "i.full.t":"قسم {d} شبه ممتلئ ({p})", "i.full.e":"الصرف على مرضى جدد هنا يزيد الانتظار لا الزيارات. الحد: {l}%.",
+  "i.decline.t":"زيارات {d} انخفضت {p}", "i.decline.e":"{a} زيارة شهرياً مقابل {b} في الـ {m} أشهر السابقة.", "i.decline.n":"للعودة إلى المستوى السابق",
+  "i.noshow.t":"نسبة عدم الحضور في {d} تبلغ {p}", "i.noshow.e":"{n} مريض محجوز شهرياً لا يحضرون. الحد: {l}%.", "i.noshow.n":"لو انخفضت إلى {l}%",
+  "i.conv.t":"{p} فقط من استفسارات {d} تتحول إلى مرضى", "i.conv.e":"{a} استفسار شهرياً، و{b} مريض جديد. الحد: {l}%.", "i.conv.n":"لو وصل التحويل إلى {l}%",
+  "i.payer.t":"{x} يمثّل {p} من الإيراد", "i.payer.e":"جهة دفع واحدة فوق {l}% تعني أن تغيير عقد واحد قد يضرب المستشفى كله.",
+  "i.source.t":"{p} من المرضى الجدد يأتون من {x}", "i.source.e":"الاعتماد على مصدر واحد فوق {l}% مخاطرة.",
+  "i.camp.t":"حملة \"{x}\" أعادت {r}× من تكلفتها", "i.camp.e":"صُرف {s}، والإيراد {v}، و{b} حجز ({c}، {m}).", "i.camp.n":"خسارة هذه الحملة (مرة واحدة)",
+  pb:{
+    idle:["أطلق عرضاً موجّهاً لأفضل شريحة في هذا القسم (راجع الفئة المستهدفة).","اعرض باقات على إدارات الموارد البشرية في الشركات القريبة (عقود الشركات).","أبلغ الأطباء المحيلين أن هناك مواعيد متاحة خلال الأسبوع.","اجعل المواعيد المتاحة قابلة للحجز إلكترونياً وعبر واتساب."],
+    decline:["راجع شكاوى المرضى وتقييمات Google الأخيرة لهذا القسم.","تحقق هل غادر طبيب أو قلّت ساعات العيادة.","قارن أسعار وعروض العيادات المنافسة القريبة.","ادعُ المرضى السابقين المستحقين للمتابعة (فقط من وافق على استقبال الرسائل)."],
+    noshow:["أرسل تذكيراً قبل الموعد بـ 48 ساعة و3 ساعات (لمن وافق على الرسائل).","اتصل بمرضى الزيارة الأولى قبل يوم للتأكيد.","أضف رابط إعادة جدولة بضغطة واحدة في كل تذكير.","احجز زيادة بسيطة وآمنة في المواعيد الأعلى غياباً."],
+    conv:["قِس المكالمات الفائتة وسرعة الرد على الاتصال وواتساب.","أعطِ مركز الاتصال نصاً واضحاً: السعر، تغطية التأمين، أقرب موعد.","اتصل خلال 24 ساعة بكل استفسار لم يحجز.","انشر أسعار باقات واضحة للخدمات الأكثر طلباً."],
+    full:["أوقف الإعلانات التي تجلب مرضى جدداً لهذا القسم.","انقل هذه الميزانية إلى الأقسام التي لديها طاقة متاحة.","أضف ساعات عيادة أو طبيباً قبل زيادة الصرف هنا.","راجع التسعير: الطلب المرتفع يسمح بباقات مميزة."],
+    payer:["نمِّ باقات الدفع النقدي للخدمات عالية الطلب.","وقّع عقود شركات أكثر لتوزيع مخاطر جهات الدفع.","راجع شروط العقد ونسب الرفض مع أكبر شركة تأمين."],
+    source:["جرّب قناة جديدة بميزانية صغيرة كل شهر.","ابنِ برنامج إحالة مع أطباء الأسرة والمرضى السابقين.","سجّل مصدر كل مريض جديد عند التسجيل."],
+    camp:["أوقف الحملة أو خفّض ميزانيتها.","افحص جودة العملاء المحتملين وسرعة الاتصال بهم.","جرّب عرضاً أو صفحة هبوط جديدة قبل إعادة الإطلاق."]
+  },
+  oppT:"من تستهدف بعد ذلك", oppS:"الشرائح مرتبة حسب قيمة المريض، والنمو، والطاقة المتاحة في القسم",
+  score:"الدرجة", age:"العمر", whyGrow:"تنمو {p} سنوياً", whyShrink:"تتراجع {p}، وتستحق الاسترجاع", whyValue:"قيمة عالية: {v} للمريض", whyFree:"القسم ممتلئ بنسبة {p} فقط",
+  whyDefault:"{v} للمريض، ونمو {p}", oppTail:"{n} مريض في السنة الأخيرة، أغلبهم {x}.", noSeg:"أضف ورقة Segments لتظهر اقتراحات الاستهداف.",
+  segT:"استكشف شرائح المرضى", groupBy:"التجميع حسب", dimAge:"الفئة العمرية", dimArea:"المنطقة", dimPayer:"جهة الدفع", dimDept:"القسم", allDepts:"كل الأقسام",
+  thPatients:"المرضى", thShare:"النسبة", thGrowth:"النمو", thRevenue:"الإيراد", thPerPatient:"للمريض", last12:"آخر 12 شهراً", prev12:"الـ 12 شهراً قبلها",
+  heatT:"القسم × الفئة العمرية", heatS:"نسبة مرضى كل قسم",
+  cSpend:"إجمالي الصرف", cRev:"إيراد الحملات", cRoas:"العائد على الصرف", cCpb:"تكلفة الحجز", cL2B:"عميل محتمل ← حجز",
+  chChT:"العائد لكل ريال حسب القناة", chChS:"الإيراد ÷ الصرف. أقل من 1.0 يعني خسارة.", chCpbT:"تكلفة الحجز حسب القناة", cpbHint:"بالـ {c}. الأقل أفضل.",
+  sReturn:"العائد (×)", sCpb:"تكلفة الحجز", campAllT:"كل الحملات", campAllS:"مرتبة حسب العائد على الصرف",
+  thCampaign:"الحملة", thChannel:"القناة", thMonth:"الشهر", thSpend:"الصرف", thLeads:"المحتملون", thBookings:"الحجوزات", thCpb:"تكلفة / حجز", thReturn:"العائد",
+  del:"حذف", noCamps:"لا توجد حملات بعد.", addCamp:"أضف حملة", fName:"الاسم", fChannel:"القناة", fMonth:"الشهر (YYYY-MM)", fSpend:"الصرف", fLeads:"المحتملون", fBookings:"الحجوزات", fRevenue:"الإيراد", addCampBtn:"أضف الحملة",
+  planT:"خطة العمل", planS:"أضف إجراءات من تبويب المشاكل أو اكتب إجراءاتك. تُحفظ في هذا المتصفح.", planStats:"{a} من {b} منجزة",
+  thAction:"الإجراء", thOwner:"المسؤول", thDue:"الموعد", thStatus:"الحالة", stTodo:"لم يبدأ", stDoing:"قيد التنفيذ", stDone:"منجز",
+  noActions:"لا توجد إجراءات بعد. افتح المشاكل واضغط «+ للخطة» بجانب أي إجراء.", fAction:"الإجراء", fActionPh:"مثال: مقابلة الموارد البشرية في 3 شركات قريبة بخصوص باقات العلاج الطبيعي",
+  fOwner:"المسؤول", fOwnerPh:"الاسم", fDue:"تاريخ الاستحقاق", addActBtn:"أضف الإجراء",
+  advT:"اسأل المستشار الذكي", advS:"يقرأ Claude ملخص الأرقام في التطبيق (بدون أسماء مرضى) ويجيب. اسأل بالعربي أو الإنجليزي.",
+  advOff:"المستشار الذكي متاح فقط عند فتح التطبيق داخل Claude. بقية الميزات تعمل هنا، حتى بدون إنترنت.",
+  yourQ:"سؤالك", askPh:"ما أفضل 3 حملات أبدأ فيها الشهر القادم بميزانية 50 ألف ريال؟", ask:"اسأل", stop:"إيقاف", thinking:"يفكّر…",
+  presets:["ما أهم 3 مشاكل تسويقية يجب أن أبدأ بها هذا الشهر، ولماذا؟","أعطني خطة تسويق لمدة 90 يوماً لقسم العلاج الطبيعي","كيف أوزع ميزانية 50,000 ريال على القنوات الشهر القادم؟","أي الحملات أوقفها، وبماذا أستبدلها؟","اقترح عروض باقات للشركات القريبة"],
+  advCut:"[الإجابة انقطعت. اسأل سؤالاً أضيق.]", advRate:"أسئلة كثيرة في وقت قصير. انتظر دقيقة وحاول مجدداً.", advStopped:"[أُوقف]", advErr:"تعذّر على المستشار الإجابة: {e}. حاول مرة أخرى.",
+  dataT:"حمّل بيانات مستشفاك", dataS:"ارفع ملف Excel واحداً فيه حتى أربع أوراق، أو ملف CSV واحداً في كل مرة. استخدم أرقاماً مجمّعة فقط، بدون أسماء مرضى أو أرقام ملفات.",
+  dlFull:"حمّل قالب Excel", dlBlank:"حمّل قالباً فارغاً", dlNote:"القالب الكامل يحتوي الأرقام الحالية لترى الشكل المطلوب، ثم تستبدلها بأرقامك.",
+  importInto:"الاستيراد إلى", importAuto:"تلقائي: حسب اسم الورقة أو الأعمدة", fileLbl:"الملف (.xlsx أو .xls أو .csv)",
+  thSheet:"الورقة", thRowsNow:"الصفوف حالياً", thColumns:"الأعمدة", thHolds:"محتواها", resetDemo:"ارجع للبيانات التجريبية", resetConfirm:"اضغط مرة ثانية لاستبدال كل البيانات بالتجريبية",
+  setT:"الإعدادات والحدود", setS:"تُعلَّم المشكلة عندما يتجاوز القسم هذه الحدود",
+  sHospital:"اسم المستشفى", sCurrency:"العملة", sUtilLow:"طاقة غير مستغلة تحت (%)", sUtilHigh:"شبه ممتلئ فوق (%)", sNoShow:"عدم الحضور فوق (%)", sConv:"تحويل الاستفسارات تحت (%)",
+  sDecline:"انخفاض الزيارات أسوأ من (%)", sConc:"جهة دفع/مصدر واحد فوق (%)", sRoas:"عائد الحملة تحت (×)", saveSet:"احفظ الإعدادات",
+  desc_depts:"صف لكل قسم في كل شهر. capacity_slots = المواعيد المتاحة؛ booked = المواعيد المحجوزة؛ attended = الزيارات المنفّذة؛ inquiries = استفسارات أشخاص جدد (اتصال/واتساب/موقع).",
+  desc_sources:"كيف عرف المرضى الجدد عنكم، شهرياً (من سؤال الاستقبال أو مركز الاتصال).",
+  desc_segments:"أعداد مجمّعة للمرضى في آخر 12 شهراً (patients) والـ 12 شهراً قبلها (prev_patients). مجموعات فقط، لا مرضى أفراد.",
+  desc_campaigns:"صف لكل حملة. leads = من تفاعل؛ bookings = المواعيد من الحملة؛ revenue = إيراد هذه المواعيد.",
+  tReading:"جارٍ قراءة {f}…", tNoXlsx:"قارئ Excel لم يُحمَّل. تحقق من الاتصال وأعد تحميل الصفحة.",
+  tNoMatch:"لم تتطابق أي ورقة بالاسم ({s}) أو بالأعمدة. أعد تسمية الأوراق أو اختر مجموعة البيانات يدوياً.",
+  tLoaded:"✓ {s}: حُمّل {n} صف.", tNoRows:"{s}: لا توجد صفوف.", tMissing:"{s}: أعمدة ناقصة: {c}. المطلوب: {e}.",
+  tBadNum:"{s}: {n} خلية رقمية فارغة أو غير رقمية وضُبطت على 0.", tBadMonth:"{s}: {n} صف فيه شهر ليس بصيغة YYYY-MM.",
+  tReadErr:"تعذّرت قراءة الملف: {e}", toastLoaded:"حُمّلت {n} ورقة من {f}.", toastNone:"لم تُحمَّل بيانات. التفاصيل في البيانات والإعدادات.", toastReadErr:"تعذّرت قراءة الملف.",
+  toastSaved:"حُفظ الملف.", toastDl:"نزل الملف.", toastDlErr:"تعذّر تنزيل الملف.", toastNoXlsx:"مكتبة Excel لم تُحمَّل.",
+  toastInPlan:"موجود في الخطة مسبقاً.", toastAdded:"أُضيف إلى خطة العمل.", toastCamp:"أُضيفت الحملة.", toastAct:"أُضيف الإجراء.", toastSet:"حُفظت الإعدادات.", toastReset:"عادت البيانات التجريبية، وخطة العمل باقية.",
+  readmeTitle:"بوصلة تسويق المستشفى — قالب البيانات", readme1:"عبّئ كل ورقة بأرقام مستشفاك، واترك أسماء الأعمدة كما هي تماماً (بالإنجليزي).",
+  readme2:"أرقام مجمّعة فقط. لا تضع أسماء مرضى أو أرقام ملفات أو أرقام جوالات في هذا الملف.", fileFull:"hospital-marketing-data.xlsx", fileBlank:"hospital-marketing-template.xlsx",
+  all:"الكل", demoHospital:"مستشفى خاص تجريبي"
+}};
+/* Arabic display names for the demo's built-in labels. Your own data is shown exactly as written. */
+const VAL_AR = {
+  "Dermatology":"الجلدية","Dental":"الأسنان","Orthopedics":"العظام","Pediatrics":"الأطفال","OB/GYN":"النساء والولادة","Cardiology":"القلب","Ophthalmology":"العيون","Physiotherapy":"العلاج الطبيعي",
+  "Insurance network":"شبكة التأمين","Doctor referral":"إحالة طبيب","Google Search":"بحث Google","Corporate contracts":"عقود الشركات","Walk-in / word of mouth":"حضور مباشر / توصية",
+  "Events":"فعاليات","WhatsApp":"واتساب","X (Twitter)":"إكس (تويتر)",
+  "North":"الشمال","East":"الشرق","Central":"الوسط","West":"الغرب","South":"الجنوب",
+  "Insurer A":"شركة التأمين أ","Insurer B":"شركة التأمين ب","Insurer C":"شركة التأمين ج","Cash / self-pay":"نقدي / دفع ذاتي","Corporate":"الشركات",
+  "Ramadan skin care package":"باقة العناية بالبشرة في رمضان","Knee pain search ads":"إعلانات بحث لآلام الركبة","Pregnancy journey program":"برنامج رحلة الحمل","Heart check package":"باقة فحص القلب",
+  "Physio for office workers":"علاج طبيعي لموظفي المكاتب","Smile makeover reels":"مقاطع تجميل الابتسامة","Summer kids dental":"أسنان الأطفال في الصيف","Back-to-school checkups":"فحوصات العودة للمدارس",
+  "LASIK awareness":"توعية الليزك","GP referral visits":"زيارات إحالة أطباء الأسرة","Physio short videos":"مقاطع قصيرة للعلاج الطبيعي","All":"الكل","Demo Private Hospital":"مستشفى خاص تجريبي"
+};
+let LANG = "ar";
+try { const l = localStorage.getItem("hmc_lang"); if (l === "en" || l === "ar") LANG = l; } catch(e){}
+function t(key, o){
+  let s = (I18N[LANG] && I18N[LANG][key] != null) ? I18N[LANG][key] : (I18N.en[key] != null ? I18N.en[key] : key);
+  if (typeof s === "string" && o) s = s.replace(/\{(\w+)\}/g, (m, k) => o[k] != null ? o[k] : m);
+  return s;
+}
+const tv = v => LANG === "ar" && VAL_AR[v] ? VAL_AR[v] : v;
+const isRTL = () => LANG === "ar";
+function applyStatic(){
+  document.documentElement.lang = LANG; document.documentElement.dir = isRTL() ? "rtl" : "ltr";
+  document.title = t("appName");
+  document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll("[data-i18n-html]").forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
+  document.querySelectorAll("[data-i18n-ph]").forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+  document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === LANG)));
+  $("#dropZone").setAttribute("aria-label", t("dropTitle"));
+  $("#presets").innerHTML = t("presets").map(p => `<button class="chip" type="button" dir="auto">${esc(p)}</button>`).join("");
+}
+
+/* ================= helpers ================= */
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const sum = (arr, k) => arr.reduce((a, r) => a + (+(k ? r[k] : r) || 0), 0);
 const pct = (v, d = 0) => v == null || !isFinite(v) ? "–" : (v * 100).toFixed(d) + "%";
 const fmt = v => v == null || !isFinite(v) ? "–" : Math.round(v).toLocaleString("en-US");
+function curLabel(){ const c = S.settings.currency || "SAR"; return LANG === "ar" && /^sar$/i.test(c) ? "ر.س" : c; }
 function money(v){
   if (v == null || !isFinite(v)) return "–";
-  const c = S.settings.currency || "SAR", a = Math.abs(v);
+  const c = curLabel(), a = Math.abs(v);
+  if (LANG === "ar"){
+    const s = a >= 1e6 ? (v/1e6).toFixed(2) + " مليون" : a >= 1e4 ? (v/1e3).toFixed(0) + " ألف" : Math.round(v).toLocaleString("en-US");
+    return s + " " + c;
+  }
   const s = a >= 1e6 ? (v/1e6).toFixed(2) + "M" : a >= 1e4 ? (v/1e3).toFixed(0) + "K" : Math.round(v).toLocaleString("en-US");
   return c + " " + s;
 }
-function toast(msg){ const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), 2600); }
-function rng(seed){ return function(){ seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function toast(msg){ const el = $("#toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove("show"), 2600); }
+function rng(seed){ return function(){ seed |= 0; seed = seed + 0x6D2B79F5 | 0; let x = Math.imul(seed ^ seed >>> 15, 1 | seed); x = x + Math.imul(x ^ x >>> 7, 61 | x) ^ x; return ((x ^ x >>> 14) >>> 0) / 4294967296; }; }
 const uid = () => Math.random().toString(36).slice(2, 9);
 
-/* ---------- schema ---------- */
+/* ================= schema ================= */
 const SCHEMA = {
-  depts:     { sheet:"Departments_Monthly", cols:["month","department","capacity_slots","booked","attended","new_patients","inquiries","revenue"],
-               nums:["capacity_slots","booked","attended","new_patients","inquiries","revenue"],
-               desc:"One row per department per month. capacity_slots = appointment slots available; booked = appointments made; attended = visits that happened; inquiries = calls/WhatsApp/web requests from new people." },
-  sources:   { sheet:"Sources_Monthly", cols:["month","source","new_patients"], nums:["new_patients"],
-               desc:"How new patients heard about you, per month (from registration desk or call center question)." },
-  segments:  { sheet:"Segments", cols:["department","age_group","area","payer","patients","prev_patients","revenue"], nums:["patients","prev_patients","revenue"],
-               desc:"Grouped patient counts for the last 12 months (patients) and the 12 months before (prev_patients). Groups only, never individual patients." },
-  campaigns: { sheet:"Campaigns", cols:["name","channel","department","month","spend","leads","bookings","revenue"], nums:["spend","leads","bookings","revenue"],
-               desc:"One row per campaign. leads = people who responded; bookings = appointments from the campaign; revenue = revenue from those bookings." }
+  depts:     { sheet:"Departments_Monthly", cols:["month","department","capacity_slots","booked","attended","new_patients","inquiries","revenue"], nums:["capacity_slots","booked","attended","new_patients","inquiries","revenue"] },
+  sources:   { sheet:"Sources_Monthly", cols:["month","source","new_patients"], nums:["new_patients"] },
+  segments:  { sheet:"Segments", cols:["department","age_group","area","payer","patients","prev_patients","revenue"], nums:["patients","prev_patients","revenue"] },
+  campaigns: { sheet:"Campaigns", cols:["name","channel","department","month","spend","leads","bookings","revenue"], nums:["spend","leads","bookings","revenue"] }
 };
 const NUMK = SCHEMA.depts.nums;
 const DEFAULT_SETTINGS = { hospital:"Demo Private Hospital", currency:"SAR", utilLow:65, utilHigh:92, noShow:15, conv:40, decline:10, concentration:40, roas:1, period:3 };
 
-/* ---------- demo data (clearly marked) ---------- */
+/* ================= demo data (clearly marked) ================= */
 function genDemo(){
   const r = rng(42), n = (v, p = .04) => v * (1 + (r() * 2 - 1) * p);
   const months = []; let y = 2025, m = 11;
@@ -470,7 +671,7 @@ function genDemo(){
   return { depts, sources, segments, campaigns };
 }
 
-/* ---------- state ---------- */
+/* ================= state ================= */
 const STORE = "hmc_state_v1";
 let S;
 function load(){
@@ -480,7 +681,7 @@ function load(){
 function save(){ try { localStorage.setItem(STORE, JSON.stringify(S)); } catch(e){} }
 S = load();
 
-/* ---------- aggregation ---------- */
+/* ================= aggregation ================= */
 const monthsAll = () => [...new Set(S.data.depts.map(r => r.month))].sort();
 function periods(){ const ms = monthsAll(), n = +S.settings.period || 3; return { cur:ms.slice(-n), prev:ms.slice(-2 * n, -n), n }; }
 function derive(a){
@@ -496,192 +697,156 @@ function aggDepts(ms){
   for (const r of S.data.depts){ if (!set.has(r.month)) continue; const a = o[r.department] || (o[r.department] = blank(r.department)); NUMK.forEach(k => a[k] += +r[k] || 0); }
   Object.values(o).forEach(derive); return o;
 }
-function totalOf(o){ const t = blank("All"); Object.values(o).forEach(a => NUMK.forEach(k => t[k] += a[k])); return derive(t); }
+function totalOf(o){ const x = blank("All"); Object.values(o).forEach(a => NUMK.forEach(k => x[k] += a[k])); return derive(x); }
 const deptNames = () => [...new Set([...S.data.depts.map(r => r.department), ...S.data.segments.map(r => r.department)])].sort();
 
-/* ---------- diagnostics ---------- */
-const PLAYBOOK = {
-  idle: ["Run a targeted offer for this department's best segment (see Target audience).",
-         "Offer packages to HR teams of nearby companies (corporate contracts).",
-         "Tell referring GPs and specialists that same-week slots are open.",
-         "Make the open slots bookable online and on WhatsApp."],
-  decline: ["Check recent patient complaints and Google reviews for this department.",
-            "Check whether a doctor left or cut clinic hours.",
-            "Compare prices and offers of competing clinics nearby.",
-            "Invite past patients who are due for follow-up (only those who agreed to receive messages)."],
-  noshow: ["Send reminders 48 hours and 3 hours before the visit (patients who agreed to messages).",
-           "Call first-time patients the day before to confirm.",
-           "Add a one-tap reschedule link to every reminder.",
-           "Overbook the slots with the worst no-show rate by a small, safe margin."],
-  conv: ["Measure missed calls and response time on calls and WhatsApp.",
-         "Give the call center a script: price, insurance coverage, earliest slot.",
-         "Call back every inquiry that did not book within 24 hours.",
-         "Publish clear package prices for the most asked services."],
-  full: ["Pause ads that bring new patients to this department.",
-         "Move that budget to departments with free capacity.",
-         "Add clinic hours or a doctor before spending more here.",
-         "Review pricing: high demand can support premium packages."],
-  payer: ["Grow cash / self-pay packages for high-demand services.",
-          "Sign more corporate contracts to spread payer risk.",
-          "Review contract terms and rejection rates with the largest insurer."],
-  source: ["Test one new channel with a small budget each month.",
-           "Build a referral program with GPs and past patients.",
-           "Track the source of every new patient at registration."],
-  camp: ["Pause the campaign or cut its budget.",
-         "Check lead quality and how fast leads were called back.",
-         "Test a new offer or landing page before relaunching."]
-};
+/* ================= diagnostics ================= */
 const SEVRANK = { critical:0, warning:1, info:2 };
 function diagnose(){
   const st = S.settings, { cur, prev, n } = periods(), C = aggDepts(cur), P = aggDepts(prev), I = [];
-  const per = `last ${n} months`;
   for (const d of Object.values(C)){
-    const name = d.department, p = P[d.department], rpv = d.rpv || 0;
+    const raw = d.department, name = tv(raw), p = P[raw], rpv = d.rpv || 0;
     if (d.util != null && d.util * 100 < st.utilLow){
       const target = st.utilLow / 100 + .1, idle = (target - d.util) * d.capacity_slots / n;
-      I.push({ key:"idle", sev:"critical", dept:name, title:`${name} uses only ${pct(d.util)} of its capacity`,
-        evidence:`About ${fmt(d.capacity_slots * (1 - d.util) / n)} empty slots a month (${per}). Line: ${st.utilLow}%.`,
-        impact: idle * (1 - (d.noshow || 0)) * rpv, impactNote:`if filled to ${Math.round(target * 100)}%` });
+      I.push({ key:"idle", sev:"critical", dept:raw, title:t("i.idle.t", { d:name, p:pct(d.util) }),
+        evidence:t("i.idle.e", { n:fmt(d.capacity_slots * (1 - d.util) / n), m:n, l:st.utilLow }),
+        impact: idle * (1 - (d.noshow || 0)) * rpv, impactNote:t("i.idle.n", { t:Math.round(target * 100) }) });
     }
-    if (d.util != null && d.util * 100 > st.utilHigh){
-      I.push({ key:"full", sev:"info", dept:name, title:`${name} is nearly full (${pct(d.util)})`,
-        evidence:`Spending on new patients here adds waiting time, not visits. Line: ${st.utilHigh}%.`, impact:null });
-    }
+    if (d.util != null && d.util * 100 > st.utilHigh)
+      I.push({ key:"full", sev:"info", dept:raw, title:t("i.full.t", { d:name, p:pct(d.util) }), evidence:t("i.full.e", { l:st.utilHigh }), impact:null });
     if (p && p.attended > 0){
       const ch = d.attended / p.attended - 1;
-      if (ch * 100 < -st.decline){
-        I.push({ key:"decline", sev: ch < -.2 ? "critical" : "warning", dept:name, title:`${name} visits fell ${pct(-ch)}`,
-          evidence:`${fmt(d.attended / n)} visits a month vs ${fmt(p.attended / n)} in the ${n} months before.`,
-          impact:(p.attended - d.attended) / n * rpv, impactNote:"to get back to the previous level" });
-      }
+      if (ch * 100 < -st.decline)
+        I.push({ key:"decline", sev: ch < -.2 ? "critical" : "warning", dept:raw, title:t("i.decline.t", { d:name, p:pct(-ch) }),
+          evidence:t("i.decline.e", { a:fmt(d.attended / n), b:fmt(p.attended / n), m:n }),
+          impact:(p.attended - d.attended) / n * rpv, impactNote:t("i.decline.n") });
     }
-    if (d.noshow != null && d.noshow * 100 > st.noShow){
-      I.push({ key:"noshow", sev:"warning", dept:name, title:`${name} no-show rate is ${pct(d.noshow)}`,
-        evidence:`${fmt((d.booked - d.attended) / n)} booked patients a month do not come. Line: ${st.noShow}%.`,
-        impact:(d.noshow - st.noShow / 100) * d.booked / n * rpv, impactNote:`if cut to ${st.noShow}%` });
-    }
-    if (d.conv != null && d.conv * 100 < st.conv){
-      I.push({ key:"conv", sev:"warning", dept:name, title:`Only ${pct(d.conv)} of ${name} inquiries become patients`,
-        evidence:`${fmt(d.inquiries / n)} inquiries a month, ${fmt(d.new_patients / n)} new patients. Line: ${st.conv}%.`,
-        impact:(st.conv / 100 * d.inquiries - d.new_patients) / n * rpv, impactNote:`if conversion reached ${st.conv}%` });
-    }
+    if (d.noshow != null && d.noshow * 100 > st.noShow)
+      I.push({ key:"noshow", sev:"warning", dept:raw, title:t("i.noshow.t", { d:name, p:pct(d.noshow) }),
+        evidence:t("i.noshow.e", { n:fmt((d.booked - d.attended) / n), l:st.noShow }),
+        impact:(d.noshow - st.noShow / 100) * d.booked / n * rpv, impactNote:t("i.noshow.n", { l:st.noShow }) });
+    if (d.conv != null && d.conv * 100 < st.conv)
+      I.push({ key:"conv", sev:"warning", dept:raw, title:t("i.conv.t", { d:name, p:pct(d.conv) }),
+        evidence:t("i.conv.e", { a:fmt(d.inquiries / n), b:fmt(d.new_patients / n), l:st.conv }),
+        impact:(st.conv / 100 * d.inquiries - d.new_patients) / n * rpv, impactNote:t("i.conv.n", { l:st.conv }) });
   }
   const payers = {}; S.data.segments.forEach(r => payers[r.payer] = (payers[r.payer] || 0) + (+r.revenue || 0));
   const pt = sum(Object.values(payers)), topP = Object.entries(payers).sort((a, b) => b[1] - a[1])[0];
   if (topP && pt && topP[1] / pt * 100 > st.concentration)
-    I.push({ key:"payer", sev:"warning", dept:"All", title:`${topP[0]} brings ${pct(topP[1] / pt)} of revenue`,
-      evidence:`One payer above ${st.concentration}% means one contract change can hit the whole hospital.`, impact:null });
+    I.push({ key:"payer", sev:"warning", dept:"All", title:t("i.payer.t", { x:tv(topP[0]), p:pct(topP[1] / pt) }), evidence:t("i.payer.e", { l:st.concentration }), impact:null });
   const curSet = new Set(cur), src = {}; S.data.sources.filter(r => curSet.has(r.month)).forEach(r => src[r.source] = (src[r.source] || 0) + (+r.new_patients || 0));
   const stt = sum(Object.values(src)), topS = Object.entries(src).sort((a, b) => b[1] - a[1])[0];
   if (topS && stt && topS[1] / stt * 100 > st.concentration)
-    I.push({ key:"source", sev:"warning", dept:"All", title:`${pct(topS[1] / stt)} of new patients come from ${topS[0]}`,
-      evidence:`Relying on one source above ${st.concentration}% is risky.`, impact:null });
+    I.push({ key:"source", sev:"warning", dept:"All", title:t("i.source.t", { x:tv(topS[0]), p:pct(topS[1] / stt) }), evidence:t("i.source.e", { l:st.concentration }), impact:null });
   S.data.campaigns.forEach(c => {
     const ro = c.spend ? c.revenue / c.spend : null;
     if (ro != null && ro < st.roas)
-      I.push({ key:"camp", sev:"warning", dept:c.department, title:`Campaign "${c.name}" returned ${ro.toFixed(2)}× its cost`,
-        evidence:`${money(c.spend)} spent, ${money(c.revenue)} revenue, ${fmt(c.bookings)} bookings (${c.channel}, ${c.month}).`,
-        impact:c.spend - c.revenue, impactNote:"lost on this campaign (one-off)" });
+      I.push({ key:"camp", sev:"warning", dept:c.department, title:t("i.camp.t", { x:tv(c.name), r:ro.toFixed(2) }),
+        evidence:t("i.camp.e", { s:money(c.spend), v:money(c.revenue), b:fmt(c.bookings), c:tv(c.channel), m:c.month }),
+        impact:c.spend - c.revenue, impactNote:t("i.camp.n"), cid:c.id || c.name });
   });
-  I.forEach(i => { i.actions = PLAYBOOK[i.key]; i.id = i.key + "|" + i.dept + "|" + i.title; });
+  I.forEach(i => { i.actions = t("pb")[i.key]; i.id = i.key + "|" + i.dept + "|" + (i.cid || ""); });
   return I.sort((a, b) => SEVRANK[a.sev] - SEVRANK[b.sev] || (b.impact || 0) - (a.impact || 0));
 }
 function issueHTML(i, compact){
-  const imp = i.impact != null && i.impact > 0 ? `<span class="impact">≈ ${money(i.impact)}${i.key === "camp" ? "" : " / month"}</span> <span>(estimate, ${esc(i.impactNote)})</span>` : "";
-  const sevLabel = { critical:"Critical", warning:"Warning", info:"Opportunity" }[i.sev];
+  const imp = i.impact != null && i.impact > 0 ? `<span class="impact">≈ ${money(i.impact)}${i.key === "camp" ? "" : t("perMonth")}</span> <span>(${t("estimate")}، ${esc(i.impactNote)})</span>`.replace("، ", LANG === "ar" ? "، " : ", ") : "";
   return `<div class="issue ${i.sev}">
-    <div class="meta"><span class="pill ${i.sev}">${sevLabel}</span><span>${esc(i.dept)}</span>${imp}</div>
+    <div class="meta"><span class="pill ${i.sev}">${t("sevLbl" + i.sev)}</span><span>${esc(tv(i.dept))}</span>${imp}</div>
     <h3>${esc(i.title)}</h3><p class="hint">${esc(i.evidence)}</p>
-    ${compact ? "" : `<ul>${i.actions.map((a, k) => `<li>${esc(a)} <button class="btn small" data-add="${esc(i.id)}" data-k="${k}">+ Plan</button></li>`).join("")}</ul>`}
+    ${compact ? "" : `<ul>${i.actions.map((a, k) => `<li>${esc(a)} <button class="btn small" data-add="${esc(i.id)}" data-k="${k}">${t("addPlan")}</button></li>`).join("")}</ul>`}
   </div>`;
 }
 
-/* ---------- charts ---------- */
+/* ================= charts ================= */
 const charts = {};
 function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
 function mkChart(id, cfg){
-  if (!window.Chart) { const c = document.getElementById(id); if (c) c.parentElement.innerHTML = '<p class="empty">Chart library did not load. Check your connection and reload.</p>'; return; }
+  const el = document.getElementById(id); if (!el) return;
+  if (!window.Chart){ el.parentElement.innerHTML = `<p class="empty">${t("chartFail")}</p>`; return; }
   if (charts[id]) charts[id].destroy();
-  const ink = css("--muted"), grid = css("--line");
+  const ink = css("--muted"), grid = css("--line"), rtl = isRTL();
   Chart.defaults.font.family = css("--body"); Chart.defaults.color = ink;
-  cfg.options = Object.assign({ responsive:true, maintainAspectRatio:false, animation:false,
-    plugins:{ legend:{ labels:{ boxWidth:12, color:ink } }, tooltip:{} } }, cfg.options || {});
+  cfg.options = Object.assign({ responsive:true, maintainAspectRatio:false, animation:false, locale:"en-US",
+    plugins:{ legend:{ rtl, labels:{ boxWidth:12, color:ink } }, tooltip:{ rtl, textDirection: rtl ? "rtl" : "ltr" } } }, cfg.options || {});
+  cfg.options.plugins.legend = Object.assign({ rtl, labels:{ boxWidth:12, color:ink } }, cfg.options.plugins.legend || {});
+  cfg.options.plugins.tooltip = Object.assign({ rtl, textDirection: rtl ? "rtl" : "ltr" }, cfg.options.plugins.tooltip || {});
   const sc = cfg.options.scales || {};
+  if (cfg.options.indexAxis === "y" && rtl){ if (sc.x) sc.x.reverse = true; if (sc.y) sc.y.position = "right"; }
   Object.values(sc).forEach(s => { s.grid = Object.assign({ color:grid }, s.grid || {}); s.ticks = Object.assign({ color:ink }, s.ticks || {}); s.border = { display:false }; });
-  charts[id] = new Chart(document.getElementById(id), cfg);
+  charts[id] = new Chart(el, cfg);
 }
 function alpha(hex, a){ const h = hex.replace("#",""); const v = parseInt(h.length === 3 ? h.split("").map(x => x + x).join("") : h, 16); return `rgba(${v >> 16 & 255},${v >> 8 & 255},${v & 255},${a})`; }
 
-/* ---------- render: header ---------- */
+/* ================= render: header ================= */
 function renderHeader(){
-  $("#hospName").textContent = S.settings.hospital || "Hospital Marketing Compass";
-  const b = $("#dataBadge"); b.className = "pill " + (S.demo ? "demo" : "live"); b.textContent = S.demo ? "Demo data" : "Your data";
-  const { cur } = periods(); $("#rangeLabel").textContent = cur.length ? `Period: ${cur[0]} to ${cur[cur.length - 1]}` : "No monthly data yet";
+  const hn = S.settings.hospital; $("#hospName").textContent = hn ? tv(hn) : t("appName");
+  const b = $("#dataBadge"); b.className = "pill " + (S.demo ? "demo" : "live"); b.textContent = S.demo ? t("demoBadge") : t("liveBadge");
+  const { cur } = periods(); $("#rangeLabel").textContent = cur.length ? t("period", { a:cur[0], b:cur[cur.length - 1] }) : t("noMonthly");
   $("#periodSel").value = String(S.settings.period);
   const n = diagnose().filter(i => i.sev !== "info").length; $("#issueCount").textContent = n || "";
-  $("#onboard").hidden = !S.demo; $("#hdrUpload").textContent = S.demo ? "Upload data" : "Update data";
+  $("#onboard").hidden = !S.demo; $("#hdrUpload").textContent = S.demo ? t("upload") : t("update");
 }
 
-/* ---------- render: overview ---------- */
+/* ================= render: overview ================= */
 function deltaHTML(cur, prev, goodUp = true, isPct = false){
-  if (prev == null || cur == null || !isFinite(prev) || !isFinite(cur) || prev === 0) return `<span class="delta flat">no earlier period</span>`;
+  if (prev == null || cur == null || !isFinite(prev) || !isFinite(cur) || prev === 0) return `<span class="delta flat">${t("dNoPrev")}</span>`;
   const d = isPct ? (cur - prev) * 100 : (cur / prev - 1) * 100;
-  if (Math.abs(d) < .5) return `<span class="delta flat">flat vs previous</span>`;
+  if (Math.abs(d) < .5) return `<span class="delta flat">${t("dFlat")}</span>`;
   const up = d > 0, cls = up === goodUp ? (up ? "up-good" : "down-good") : (up ? "up-bad" : "down-bad");
-  return `<span class="delta ${cls}">${up ? "▲" : "▼"} ${Math.abs(d).toFixed(1)}${isPct ? " pts" : "%"} vs previous</span>`;
+  return `<span class="delta ${cls}">${up ? "▲" : "▼"} ${Math.abs(d).toFixed(1)}${isPct ? t("pts") : "%"} ${t("dVs")}</span>`;
 }
 function renderOverview(){
   const { cur, prev, n } = periods(), C = totalOf(aggDepts(cur)), P = totalOf(aggDepts(prev)), hasP = prev.length > 0;
   const cs = new Set(cur), camp = S.data.campaigns.filter(c => cs.has(c.month)), spend = sum(camp, "spend"), crev = sum(camp, "revenue");
   const pv = hasP ? P : {};
   const tiles = [
-    ["Patient visits / month", fmt(C.attended / n), deltaHTML(C.attended, pv.attended)],
-    ["New patients / month", fmt(C.new_patients / n), deltaHTML(C.new_patients, pv.new_patients)],
-    ["Revenue / month", money(C.revenue / n), deltaHTML(C.revenue, pv.revenue)],
-    ["Capacity used", pct(C.util), deltaHTML(C.util, pv.util, true, true)],
-    ["No-show rate", pct(C.noshow, 1), deltaHTML(C.noshow, pv.noshow, false, true)],
-    ["Inquiry → patient", pct(C.conv), deltaHTML(C.conv, pv.conv, true, true)],
-    ["Campaign return", spend ? (crev / spend).toFixed(2) + "×" : "–", `<span class="delta flat">${spend ? money(spend) + " spent" : "no campaigns in period"}</span>`]
+    [t("kVisits"), fmt(C.attended / n), deltaHTML(C.attended, pv.attended)],
+    [t("kNew"), fmt(C.new_patients / n), deltaHTML(C.new_patients, pv.new_patients)],
+    [t("kRev"), money(C.revenue / n), deltaHTML(C.revenue, pv.revenue)],
+    [t("kUtil"), pct(C.util), deltaHTML(C.util, pv.util, true, true)],
+    [t("kNoShow"), pct(C.noshow, 1), deltaHTML(C.noshow, pv.noshow, false, true)],
+    [t("kConv"), pct(C.conv), deltaHTML(C.conv, pv.conv, true, true)],
+    [t("kRoas"), spend ? (crev / spend).toFixed(2) + "×" : "–", `<span class="delta flat">${spend ? t("spent", { v:money(spend) }) : t("noCampPeriod")}</span>`]
   ];
-  $("#kpis").innerHTML = tiles.map(t => `<div class="kpi"><span class="label">${t[0]}</span><span class="value">${t[1]}</span>${t[2]}</div>`).join("");
+  $("#kpis").innerHTML = tiles.map(x => `<div class="kpi"><span class="label">${x[0]}</span><span class="value">${x[1]}</span>${x[2]}</div>`).join("");
 
   const ms = monthsAll(), A = css("--accent"), M = css("--muted");
   const byM = ms.map(m => totalOf(aggDepts([m])));
   mkChart("chTrend", { type:"line", data:{ labels:ms, datasets:[
-    { label:"Attended visits", data:byM.map(x => x.attended), borderColor:A, backgroundColor:alpha(A, .12), fill:true, tension:.3, pointRadius:ms.map((_, i) => i === ms.length - 1 ? 4 : 0), borderWidth:2 },
-    { label:"New patients", data:byM.map(x => x.new_patients), borderColor:M, borderDash:[4,3], tension:.3, pointRadius:0, borderWidth:2 } ] },
+    { label:t("sAttended"), data:byM.map(x => x.attended), borderColor:A, backgroundColor:alpha(A, .12), fill:true, tension:.3, pointRadius:ms.map((_, i) => i === ms.length - 1 ? 4 : 0), borderWidth:2 },
+    { label:t("sNew"), data:byM.map(x => x.new_patients), borderColor:M, borderDash:[4,3], tension:.3, pointRadius:0, borderWidth:2 } ] },
     options:{ interaction:{ mode:"index", intersect:false }, scales:{ x:{ grid:{ display:false } }, y:{ beginAtZero:true } } } });
 
   const D = Object.values(aggDepts(cur)).sort((a, b) => b.util - a.util), st = S.settings;
-  $("#utilHint").textContent = `Red below ${st.utilLow}%, amber above ${st.utilHigh}%`;
-  mkChart("chUtil", { type:"bar", data:{ labels:D.map(d => d.department), datasets:[{ label:"Capacity used", data:D.map(d => +(d.util * 100).toFixed(1)),
+  $("#utilHint").textContent = t("utilHint", { lo:st.utilLow, hi:st.utilHigh });
+  mkChart("chUtil", { type:"bar", data:{ labels:D.map(d => tv(d.department)), datasets:[{ label:t("sUtil"), data:D.map(d => +(d.util * 100).toFixed(1)),
     backgroundColor:D.map(d => d.util * 100 < st.utilLow ? css("--bad") : d.util * 100 > st.utilHigh ? css("--warn") : A), borderRadius:4 }] },
     options:{ indexAxis:"y", plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:c => c.raw + "%" } } }, scales:{ x:{ min:0, max:100, ticks:{ callback:v => v + "%" } }, y:{ grid:{ display:false } } } } });
 
   const src = {}; S.data.sources.filter(r => cs.has(r.month)).forEach(r => src[r.source] = (src[r.source] || 0) + (+r.new_patients || 0));
   const se = Object.entries(src).sort((a, b) => b[1] - a[1]), stt = sum(se.map(x => x[1]));
-  if (se.length) mkChart("chSources", { type:"bar", data:{ labels:se.map(x => x[0]), datasets:[{ label:"Share", data:se.map(x => +(x[1] / stt * 100).toFixed(1)), backgroundColor:se.map((_, i) => i === 0 ? A : alpha(A, .45)), borderRadius:4 }] },
-    options:{ indexAxis:"y", plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:c => c.raw + "% · " + fmt(se[c.dataIndex][1]) + " patients" } } }, scales:{ x:{ beginAtZero:true, ticks:{ callback:v => v + "%" } }, y:{ grid:{ display:false } } } } });
-  else $("#chSources").parentElement.innerHTML = '<p class="empty">No source data. Add the Sources_Monthly sheet.</p>';
+  if (se.length) mkChart("chSources", { type:"bar", data:{ labels:se.map(x => tv(x[0])), datasets:[{ label:t("sShare"), data:se.map(x => +(x[1] / stt * 100).toFixed(1)), backgroundColor:se.map((_, i) => i === 0 ? A : alpha(A, .45)), borderRadius:4 }] },
+    options:{ indexAxis:"y", plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:c => c.raw + "% · " + fmt(se[c.dataIndex][1]) + " " + t("patients") } } }, scales:{ x:{ beginAtZero:true, ticks:{ callback:v => v + "%" } }, y:{ grid:{ display:false } } } } });
+  else { const el = $("#chSources"); if (el) el.parentElement.innerHTML = `<p class="empty">${t("noSources")}</p>`; }
 
   const top = diagnose().filter(i => i.sev !== "info").slice(0, 4);
-  $("#topIssues").innerHTML = top.length ? top.map(i => issueHTML(i, true)).join("") : '<p class="empty">No problems crossed your thresholds.</p>';
+  $("#topIssues").innerHTML = top.length ? top.map(i => issueHTML(i, true)).join("") : `<p class="empty">${t("noIssues")}</p>`;
 }
 
-/* ---------- render: problems ---------- */
+/* ================= render: problems ================= */
 function renderProblems(){
   const f = $("#sevFilter").value, I = diagnose().filter(i => f === "all" || i.sev === f);
-  $("#allIssues").innerHTML = I.length ? I.map(i => issueHTML(i, false)).join("") : '<p class="empty">Nothing here for this filter.</p>';
+  $("#allIssues").innerHTML = I.length ? I.map(i => issueHTML(i, false)).join("") : `<p class="empty">${t("nothingFilter")}</p>`;
   const { cur } = periods(), n = cur.length || 1, st = S.settings;
   const D = Object.values(aggDepts(cur)).sort((a, b) => b.revenue - a.revenue);
   const flag = (v, bad) => bad ? `<span style="color:var(--bad);font-weight:600">${v}</span>` : v;
-  $("#deptTable").innerHTML = `<thead><tr><th>Department</th><th class="n">Visits / mo</th><th class="n">New / mo</th><th class="n">Revenue / mo</th><th class="n">Capacity used</th><th class="n">No-show</th><th class="n">Inquiry → patient</th><th class="n">Revenue / visit</th></tr></thead><tbody>` +
-    D.map(d => `<tr><td>${esc(d.department)}</td><td class="n">${fmt(d.attended / n)}</td><td class="n">${fmt(d.new_patients / n)}</td><td class="n">${money(d.revenue / n)}</td>
+  $("#deptTable").innerHTML = `<thead><tr><th>${t("thDept")}</th><th class="n">${t("thVisitsMo")}</th><th class="n">${t("thNewMo")}</th><th class="n">${t("thRevMo")}</th><th class="n">${t("thUtil")}</th><th class="n">${t("thNoShow")}</th><th class="n">${t("thConv")}</th><th class="n">${t("thRpv")}</th></tr></thead><tbody>` +
+    D.map(d => `<tr><td>${esc(tv(d.department))}</td><td class="n">${fmt(d.attended / n)}</td><td class="n">${fmt(d.new_patients / n)}</td><td class="n">${money(d.revenue / n)}</td>
       <td class="n">${flag(pct(d.util), d.util * 100 < st.utilLow)}</td><td class="n">${flag(pct(d.noshow, 1), d.noshow * 100 > st.noShow)}</td>
       <td class="n">${flag(pct(d.conv), d.conv * 100 < st.conv)}</td><td class="n">${money(d.rpv)}</td></tr>`).join("") + "</tbody>";
 }
 
-/* ---------- render: audience ---------- */
+/* ================= render: audience ================= */
 function opportunities(){
   const { cur } = periods(), C = aggDepts(cur), st = S.settings, g = {};
   S.data.segments.forEach(r => { const k = r.department + "|" + r.age_group + "|" + r.area;
@@ -691,116 +856,110 @@ function opportunities(){
   if (!rows.length) return [];
   rows.forEach(a => { a.vpp = a.revenue / a.patients; a.growth = a.prev ? a.patients / a.prev - 1 : 0;
     const u = C[a.department] ? C[a.department].util : null; a.util = u; a.spare = u == null ? .3 : Math.max(0, st.utilHigh / 100 - u) / (st.utilHigh / 100); });
-  const norm = (k) => { const v = rows.map(r => r[k]), lo = Math.min(...v), hi = Math.max(...v); rows.forEach(r => r[k + "N"] = hi > lo ? (r[k] - lo) / (hi - lo) : .5); };
+  const norm = k => { const v = rows.map(r => r[k]), lo = Math.min(...v), hi = Math.max(...v); rows.forEach(r => r[k + "N"] = hi > lo ? (r[k] - lo) / (hi - lo) : .5); };
   norm("vpp"); norm("growth"); norm("spare");
   rows.forEach(r => r.score = .4 * r.vppN + .35 * r.growthN + .25 * r.spareN);
   return rows.sort((a, b) => b.score - a.score);
 }
 function renderAudience(){
-  const O = opportunities().slice(0, 8);
+  const O = opportunities().slice(0, 8), sep = LANG === "ar" ? "؛ " : "; ";
   $("#opps").innerHTML = O.length ? O.map((o, i) => {
     const topPayer = Object.entries(o.payers).sort((a, b) => b[1] - a[1])[0][0];
     const why = [];
-    if (o.growthN > .6) why.push(`growing ${pct(o.growth)} year on year`); else if (o.growth < 0) why.push(`shrinking ${pct(-o.growth)}, worth winning back`);
-    if (o.vppN > .6) why.push(`high value: ${money(o.vpp)} per patient`);
-    if (o.spareN > .5 && o.util != null) why.push(`department only ${pct(o.util)} full`);
-    if (!why.length) why.push(`${money(o.vpp)} per patient, ${pct(o.growth)} growth`);
-    return `<div class="opp"><span class="rank">#${i + 1} · score ${Math.round(o.score * 100)}</span>
-      <span class="who">${esc(o.department)} · age ${esc(o.age_group)} · ${esc(o.area)}</span>
+    if (o.growthN > .6) why.push(t("whyGrow", { p:pct(o.growth) })); else if (o.growth < 0) why.push(t("whyShrink", { p:pct(-o.growth) }));
+    if (o.vppN > .6) why.push(t("whyValue", { v:money(o.vpp) }));
+    if (o.spareN > .5 && o.util != null) why.push(t("whyFree", { p:pct(o.util) }));
+    if (!why.length) why.push(t("whyDefault", { v:money(o.vpp), p:pct(o.growth) }));
+    return `<div class="opp"><span class="rank">#${i + 1} · ${t("score")} ${Math.round(o.score * 100)}</span>
+      <span class="who">${esc(tv(o.department))} · ${t("age")} <bdi>${esc(o.age_group)}</bdi> · ${esc(tv(o.area))}</span>
       <div class="scorebar"><i style="width:${Math.round(o.score * 100)}%"></i></div>
-      <span class="why">${esc(why.join("; "))}. ${fmt(o.patients)} patients last year, mostly ${esc(topPayer)}.</span></div>`;
-  }).join("") : '<p class="empty">Add the Segments sheet to get target suggestions.</p>';
+      <span class="why">${esc(why.join(sep))}. ${esc(t("oppTail", { n:fmt(o.patients), x:tv(topPayer) }))}</span></div>`;
+  }).join("") : `<p class="empty">${t("noSeg")}</p>`;
 
   const dimSel = $("#segDim"), dSel = $("#segDept"), names = deptNames(), prevD = dSel.value;
-  dSel.innerHTML = `<option value="">All departments</option>` + names.map(d => `<option>${esc(d)}</option>`).join(""); dSel.value = names.includes(prevD) ? prevD : "";
+  dSel.innerHTML = `<option value="">${t("allDepts")}</option>` + names.map(d => `<option value="${esc(d)}">${esc(tv(d))}</option>`).join(""); dSel.value = names.includes(prevD) ? prevD : "";
   const dim = dimSel.value, rows = S.data.segments.filter(r => !dSel.value || r.department === dSel.value), g = {};
   rows.forEach(r => { const a = g[r[dim]] || (g[r[dim]] = { k:r[dim], p:0, pp:0, rev:0 }); a.p += +r.patients || 0; a.pp += +r.prev_patients || 0; a.rev += +r.revenue || 0; });
   const G = Object.values(g).sort((a, b) => dim === "age_group" ? String(a.k).localeCompare(String(b.k), "en", { numeric:true }) : b.p - a.p), tp = sum(G.map(x => x.p));
-  $("#segTable").innerHTML = `<thead><tr><th>${dimSel.options[dimSel.selectedIndex].text}</th><th class="n">Patients</th><th class="n">Share</th><th class="n">Growth</th><th class="n">Revenue</th><th class="n">Per patient</th></tr></thead><tbody>` +
-    G.map(x => { const gr = x.pp ? x.p / x.pp - 1 : null; return `<tr><td>${esc(x.k)}</td><td class="n">${fmt(x.p)}</td><td class="n">${pct(x.p / tp)}</td>
-      <td class="n" style="color:${gr == null ? "inherit" : gr >= 0 ? "var(--good)" : "var(--bad)"}">${gr == null ? "–" : (gr >= 0 ? "+" : "") + pct(gr)}</td><td class="n">${money(x.rev)}</td><td class="n">${money(x.rev / x.p)}</td></tr>`; }).join("") + "</tbody>";
+  $("#segTable").innerHTML = `<thead><tr><th>${esc(dimSel.options[dimSel.selectedIndex].text)}</th><th class="n">${t("thPatients")}</th><th class="n">${t("thShare")}</th><th class="n">${t("thGrowth")}</th><th class="n">${t("thRevenue")}</th><th class="n">${t("thPerPatient")}</th></tr></thead><tbody>` +
+    G.map(x => { const gr = x.pp ? x.p / x.pp - 1 : null; return `<tr><td><bdi>${esc(tv(x.k))}</bdi></td><td class="n">${fmt(x.p)}</td><td class="n">${pct(x.p / tp)}</td>
+      <td class="n" style="color:${gr == null ? "inherit" : gr >= 0 ? "var(--good)" : "var(--bad)"}"><bdi>${gr == null ? "–" : (gr >= 0 ? "+" : "") + pct(gr)}</bdi></td><td class="n">${money(x.rev)}</td><td class="n">${money(x.rev / x.p)}</td></tr>`; }).join("") + "</tbody>";
   const A = css("--accent"), M = css("--muted");
-  mkChart("chSeg", { type:"bar", data:{ labels:G.map(x => x.k), datasets:[
-    { label:"Last 12 months", data:G.map(x => x.p), backgroundColor:A, borderRadius:4 },
-    { label:"12 months before", data:G.map(x => x.pp), backgroundColor:alpha(M, .35), borderRadius:4 } ] },
-    options:{ scales:{ x:{ grid:{ display:false } }, y:{ beginAtZero:true } } } });
+  mkChart("chSeg", { type:"bar", data:{ labels:G.map(x => tv(x.k)), datasets:[
+    { label:t("last12"), data:G.map(x => x.p), backgroundColor:A, borderRadius:4 },
+    { label:t("prev12"), data:G.map(x => x.pp), backgroundColor:alpha(M, .35), borderRadius:4 } ] },
+    options:{ scales:{ x:{ reverse:isRTL(), grid:{ display:false } }, y:{ beginAtZero:true, position:isRTL() ? "right" : "left" } } } });
 
   const ages = [...new Set(S.data.segments.map(r => r.age_group))].sort((a, b) => String(a).localeCompare(String(b), "en", { numeric:true }));
   const hm = {}; S.data.segments.forEach(r => { hm[r.department] = hm[r.department] || {}; hm[r.department][r.age_group] = (hm[r.department][r.age_group] || 0) + (+r.patients || 0); });
-  $("#heat").innerHTML = `<thead><tr><th>Department</th>${ages.map(a => `<th class="n">${esc(a)}</th>`).join("")}</tr></thead><tbody>` +
-    Object.keys(hm).sort().map(d => { const t = sum(Object.values(hm[d])); return `<tr><td>${esc(d)}</td>${ages.map(a => { const v = (hm[d][a] || 0) / (t || 1);
+  $("#heat").innerHTML = `<thead><tr><th>${t("thDept")}</th>${ages.map(a => `<th class="n"><bdi>${esc(a)}</bdi></th>`).join("")}</tr></thead><tbody>` +
+    Object.keys(hm).sort().map(d => { const tt = sum(Object.values(hm[d])); return `<tr><td>${esc(tv(d))}</td>${ages.map(a => { const v = (hm[d][a] || 0) / (tt || 1);
       return `<td class="h" style="background:${alpha(A, Math.min(.85, v * 1.3))};color:${v > .45 ? css("--accent-ink") : "inherit"}">${v ? pct(v) : "–"}</td>`; }).join("")}</tr>`; }).join("") + "</tbody>";
 }
 
-/* ---------- render: campaigns ---------- */
+/* ================= render: campaigns ================= */
+const CHANNEL_SUGGEST = ["Instagram","Snapchat","TikTok","Google Search","X (Twitter)","WhatsApp","Doctor referral","Corporate contracts","Events"];
 function renderCampaigns(){
   const C = S.data.campaigns, sp = sum(C, "spend"), rv = sum(C, "revenue"), bk = sum(C, "bookings"), ld = sum(C, "leads");
-  $("#campKpis").innerHTML = [["Total spend", money(sp)], ["Revenue from campaigns", money(rv)], ["Return on spend", sp ? (rv / sp).toFixed(2) + "×" : "–"],
-    ["Cost per booking", bk ? money(sp / bk) : "–"], ["Lead → booking", ld ? pct(bk / ld) : "–"]]
-    .map(t => `<div class="kpi"><span class="label">${t[0]}</span><span class="value">${t[1]}</span></div>`).join("");
+  $("#campKpis").innerHTML = [[t("cSpend"), money(sp)], [t("cRev"), money(rv)], [t("cRoas"), sp ? (rv / sp).toFixed(2) + "×" : "–"],
+    [t("cCpb"), bk ? money(sp / bk) : "–"], [t("cL2B"), ld ? pct(bk / ld) : "–"]]
+    .map(x => `<div class="kpi"><span class="label">${x[0]}</span><span class="value">${x[1]}</span></div>`).join("");
   const ch = {}; C.forEach(c => { const a = ch[c.channel] || (ch[c.channel] = { k:c.channel, sp:0, rv:0, bk:0 }); a.sp += +c.spend || 0; a.rv += +c.revenue || 0; a.bk += +c.bookings || 0; });
   const CH = Object.values(ch).map(a => ({ ...a, ro:a.sp ? a.rv / a.sp : 0, cpb:a.bk ? a.sp / a.bk : 0 })).sort((a, b) => b.ro - a.ro);
   const A = css("--accent"), B = css("--bad"), st = S.settings;
-  mkChart("chChannel", { type:"bar", data:{ labels:CH.map(x => x.k), datasets:[{ label:"Return (×)", data:CH.map(x => +x.ro.toFixed(2)), backgroundColor:CH.map(x => x.ro < st.roas ? B : A), borderRadius:4 }] },
+  mkChart("chChannel", { type:"bar", data:{ labels:CH.map(x => tv(x.k)), datasets:[{ label:t("sReturn"), data:CH.map(x => +x.ro.toFixed(2)), backgroundColor:CH.map(x => x.ro < st.roas ? B : A), borderRadius:4 }] },
     options:{ indexAxis:"y", plugins:{ legend:{ display:false } }, scales:{ x:{ beginAtZero:true, ticks:{ callback:v => v + "×" } }, y:{ grid:{ display:false } } } } });
   const CP = [...CH].sort((a, b) => a.cpb - b.cpb);
-  $("#cpbHint").textContent = `In ${S.settings.currency}. Lower is better.`;
-  mkChart("chCpb", { type:"bar", data:{ labels:CP.map(x => x.k), datasets:[{ label:"Cost per booking", data:CP.map(x => Math.round(x.cpb)), backgroundColor:alpha(A, .55), borderRadius:4 }] },
+  $("#cpbHint").textContent = t("cpbHint", { c:curLabel() });
+  mkChart("chCpb", { type:"bar", data:{ labels:CP.map(x => tv(x.k)), datasets:[{ label:t("sCpb"), data:CP.map(x => Math.round(x.cpb)), backgroundColor:alpha(A, .55), borderRadius:4 }] },
     options:{ indexAxis:"y", plugins:{ legend:{ display:false } }, scales:{ x:{ beginAtZero:true }, y:{ grid:{ display:false } } } } });
   const rows = [...C].map(c => ({ ...c, ro:c.spend ? c.revenue / c.spend : 0 })).sort((a, b) => b.ro - a.ro);
-  $("#campTable").innerHTML = `<thead><tr><th>Campaign</th><th>Channel</th><th>Department</th><th>Month</th><th class="n">Spend</th><th class="n">Leads</th><th class="n">Bookings</th><th class="n">Cost / booking</th><th class="n">Revenue</th><th class="n">Return</th><th></th></tr></thead><tbody>` +
-    (rows.length ? rows.map(c => `<tr><td>${esc(c.name)}</td><td>${esc(c.channel)}</td><td>${esc(c.department)}</td><td>${esc(c.month)}</td><td class="n">${money(c.spend)}</td><td class="n">${fmt(c.leads)}</td><td class="n">${fmt(c.bookings)}</td>
+  $("#campTable").innerHTML = `<thead><tr><th>${t("thCampaign")}</th><th>${t("thChannel")}</th><th>${t("thDept")}</th><th>${t("thMonth")}</th><th class="n">${t("thSpend")}</th><th class="n">${t("thLeads")}</th><th class="n">${t("thBookings")}</th><th class="n">${t("thCpb")}</th><th class="n">${t("thRevenue")}</th><th class="n">${t("thReturn")}</th><th></th></tr></thead><tbody>` +
+    (rows.length ? rows.map(c => `<tr><td>${esc(tv(c.name))}</td><td>${esc(tv(c.channel))}</td><td>${esc(tv(c.department))}</td><td><bdi>${esc(c.month)}</bdi></td><td class="n">${money(c.spend)}</td><td class="n">${fmt(c.leads)}</td><td class="n">${fmt(c.bookings)}</td>
       <td class="n">${c.bookings ? money(c.spend / c.bookings) : "–"}</td><td class="n">${money(c.revenue)}</td><td class="n"><span class="pill ${c.ro < st.roas ? "critical" : c.ro >= 3 ? "good" : "info"}">${c.ro.toFixed(2)}×</span></td>
-      <td><button class="btn small danger" data-delcamp="${esc(c.id)}" aria-label="Delete ${esc(c.name)}">Delete</button></td></tr>`).join("") : `<tr><td colspan="11" class="empty">No campaigns yet.</td></tr>`) + "</tbody>";
-  $("#channelList").innerHTML = [...new Set(C.map(c => c.channel).concat(["Instagram","Snapchat","TikTok","Google Search","X (Twitter)","WhatsApp","Doctor referral","Corporate contracts","Events"]))].map(x => `<option value="${esc(x)}">`).join("");
-  $("#cf-dept").innerHTML = deptNames().map(d => `<option>${esc(d)}</option>`).join("");
+      <td><button class="btn small danger" data-delcamp="${esc(c.id)}">${t("del")}</button></td></tr>`).join("") : `<tr><td colspan="11" class="empty">${t("noCamps")}</td></tr>`) + "</tbody>";
+  $("#channelList").innerHTML = [...new Set(C.map(c => c.channel).concat(CHANNEL_SUGGEST))].map(x => `<option value="${esc(x)}">${esc(tv(x))}</option>`).join("");
+  $("#cf-dept").innerHTML = deptNames().map(d => `<option value="${esc(d)}">${esc(tv(d))}</option>`).join("");
 }
 
-/* ---------- render: plan ---------- */
-const STATUS = { todo:"To do", doing:"In progress", done:"Done" };
+/* ================= render: plan ================= */
 function renderPlan(){
-  const A = S.actions;
-  $("#planStats").textContent = A.length ? `${A.filter(a => a.status === "done").length} of ${A.length} done` : "";
-  $("#planTable").innerHTML = `<thead><tr><th>Action</th><th>Department</th><th>Owner</th><th>Due</th><th>Status</th><th></th></tr></thead><tbody>` +
-    (A.length ? A.map(a => `<tr><td class="wrap">${esc(a.title)}${a.why ? `<div class="hint">${esc(a.why)}</div>` : ""}</td><td>${esc(a.dept)}</td><td>${esc(a.owner || "–")}</td><td>${esc(a.due || "–")}</td>
-      <td><select data-status="${a.id}" aria-label="Status" class="status-${a.status}">${Object.entries(STATUS).map(([k, v]) => `<option value="${k}" ${k === a.status ? "selected" : ""}>${v}</option>`).join("")}</select></td>
-      <td><button class="btn small danger" data-delact="${a.id}">Delete</button></td></tr>`).join("")
-      : `<tr><td colspan="6" class="empty">No actions yet. Open Problems and press “+ Plan” next to an action.</td></tr>`) + "</tbody>";
-  $("#pf-dept").innerHTML = `<option>All</option>` + deptNames().map(d => `<option>${esc(d)}</option>`).join("");
+  const A = S.actions, ST = { todo:t("stTodo"), doing:t("stDoing"), done:t("stDone") };
+  $("#planStats").textContent = A.length ? t("planStats", { a:A.filter(a => a.status === "done").length, b:A.length }) : "";
+  $("#planTable").innerHTML = `<thead><tr><th>${t("thAction")}</th><th>${t("thDept")}</th><th>${t("thOwner")}</th><th>${t("thDue")}</th><th>${t("thStatus")}</th><th></th></tr></thead><tbody>` +
+    (A.length ? A.map(a => `<tr><td class="wrap" dir="auto">${esc(a.title)}${a.why ? `<div class="hint" dir="auto">${esc(a.why)}</div>` : ""}</td><td>${esc(tv(a.dept))}</td><td>${esc(a.owner || "–")}</td><td><bdi>${esc(a.due || "–")}</bdi></td>
+      <td><select data-status="${a.id}" aria-label="${t("thStatus")}" class="status-${a.status}">${Object.entries(ST).map(([k, v]) => `<option value="${k}" ${k === a.status ? "selected" : ""}>${v}</option>`).join("")}</select></td>
+      <td><button class="btn small danger" data-delact="${a.id}">${t("del")}</button></td></tr>`).join("")
+      : `<tr><td colspan="6" class="empty">${t("noActions")}</td></tr>`) + "</tbody>";
+  $("#pf-dept").innerHTML = `<option value="All">${t("all")}</option>` + deptNames().map(d => `<option value="${esc(d)}">${esc(tv(d))}</option>`).join("");
 }
 
-/* ---------- advisor ---------- */
+/* ================= advisor ================= */
 let sampleFn = null, abortCtl = null;
-const PRESETS = [
-  "ما أهم 3 مشاكل تسويقية يجب أن أبدأ بها هذا الشهر، ولماذا؟",
-  "أعطني خطة تسويق لمدة 90 يوماً لقسم العلاج الطبيعي",
-  "كيف أوزع ميزانية 50,000 ريال على القنوات الشهر القادم؟",
-  "Which campaigns should I stop, and what should replace them?",
-  "اقترح عروض باقات للشركات القريبة"
-];
 function contextSummary(){
   const { cur, prev, n } = periods(), C = aggDepts(cur), T = totalOf(C), P = totalOf(aggDepts(prev));
   const dep = Object.values(C).map(d => ({ dept:d.department, visits_per_month:Math.round(d.attended / n), new_per_month:Math.round(d.new_patients / n), revenue_per_month:Math.round(d.revenue / n),
     capacity_used:+(d.util * 100).toFixed(1), no_show:+(d.noshow * 100).toFixed(1), inquiry_conversion:+(d.conv * 100).toFixed(1), revenue_per_visit:Math.round(d.rpv) }));
   const src = {}; const cs = new Set(cur); S.data.sources.filter(r => cs.has(r.month)).forEach(r => src[r.source] = (src[r.source] || 0) + (+r.new_patients || 0));
   const ch = {}; S.data.campaigns.forEach(c => { const a = ch[c.channel] || (ch[c.channel] = { spend:0, revenue:0, bookings:0 }); a.spend += +c.spend; a.revenue += +c.revenue; a.bookings += +c.bookings; });
+  const saveLang = LANG; LANG = "en"; const issues = diagnose(); LANG = saveLang;
   return {
     hospital:S.settings.hospital, currency:S.settings.currency, data_is_demo:S.demo, period:`${cur[0]} to ${cur[cur.length - 1]} (${n} months), compared with previous ${n} months`,
     totals:{ visits_per_month:Math.round(T.attended / n), visits_change_pct:P.attended ? +((T.attended / P.attended - 1) * 100).toFixed(1) : null, capacity_used:+(T.util * 100).toFixed(1), no_show:+(T.noshow * 100).toFixed(1) },
     departments:dep, new_patient_sources:src, channels:ch,
     campaigns:S.data.campaigns.map(c => ({ name:c.name, channel:c.channel, dept:c.department, month:c.month, spend:c.spend, bookings:c.bookings, revenue:c.revenue })),
-    detected_problems:diagnose().map(i => ({ severity:i.sev, title:i.title, evidence:i.evidence, est_monthly_impact:i.impact ? Math.round(i.impact) : null })),
+    detected_problems:issues.map(i => ({ severity:i.sev, title:i.title, evidence:i.evidence, est_monthly_impact:i.impact ? Math.round(i.impact) : null })),
     top_target_segments:opportunities().slice(0, 10).map(o => ({ dept:o.department, age:o.age_group, area:o.area, patients:o.patients, growth_pct:+(o.growth * 100).toFixed(0), value_per_patient:Math.round(o.vpp), dept_capacity_used:o.util == null ? null : +(o.util * 100).toFixed(0) })),
     open_actions:S.actions.filter(a => a.status !== "done").map(a => a.title)
   };
 }
 async function ask(q){
   if (!sampleFn || !q.trim()) return;
-  const out = $("#answer"); out.dir = /[؀-ۿ]/.test(q) ? "rtl" : "ltr"; out.textContent = "Thinking…";
+  const out = $("#answer"); out.textContent = t("thinking");
   $("#askBtn").disabled = true; $("#stopBtn").hidden = false; abortCtl = new AbortController();
   const prompt = `You are a practical marketing advisor for a private hospital in Saudi Arabia. Answer the marketer's question using ONLY the data summary below plus sound hospital-marketing practice.
 Rules:
-- Reply in the same language as the question (Arabic or English). Plain text, short headings and numbered points are fine, no markdown tables.
+- Reply in the same language as the question (Arabic or English). If Arabic, translate department, channel and segment names into Arabic. Plain text, short headings and numbered points are fine, no markdown tables.
 - Be specific: name departments, segments, channels and numbers from the data. Show the arithmetic for any figure you compute, with units (${S.settings.currency}).
 - Label anything not directly in the data as an assumption or estimate.
 - Prefer actions that fill free capacity before ones that add demand to full departments.
@@ -814,17 +973,17 @@ ${JSON.stringify(contextSummary())}
 QUESTION:
 ${q}`;
   try {
-    const res = await sampleFn(prompt, { signal:abortCtl.signal, modelTier:"default", cache:false, onText:({ text }) => { out.textContent = text || "Thinking…"; } });
-    out.textContent = res.text + (res.truncated ? "\n\n[Answer was cut short. Ask a narrower question.]" : "");
+    const res = await sampleFn(prompt, { signal:abortCtl.signal, modelTier:"default", cache:false, onText:({ text }) => { out.textContent = text || t("thinking"); } });
+    out.textContent = res.text + (res.truncated ? "\n\n" + t("advCut") : "");
   } catch(e){
     if (e && e.code === "not_granted"){ $("#advisorOn").hidden = true; $("#advisorOff").hidden = false; out.textContent = ""; }
-    else if (e && e.code === "rate_limited") out.textContent = "Too many questions in a short time. Wait a minute and try again.";
-    else if (e && e.name === "AbortError") out.textContent += "\n\n[Stopped]";
-    else out.textContent = "The advisor could not answer: " + (e && e.message ? e.message : "unknown error") + ". Try again.";
+    else if (e && e.code === "rate_limited") out.textContent = t("advRate");
+    else if (e && e.name === "AbortError") out.textContent += "\n\n" + t("advStopped");
+    else out.textContent = t("advErr", { e:(e && e.message) || "unknown error" });
   } finally { $("#askBtn").disabled = false; $("#stopBtn").hidden = true; abortCtl = null; }
 }
 
-/* ---------- data import / export ---------- */
+/* ================= data import / export ================= */
 let downloadsApi = null;
 function normMonth(v){
   if (v instanceof Date && !isNaN(v)) return `${v.getFullYear()}-${String(v.getMonth() + 1).padStart(2,"0")}`;
@@ -837,77 +996,75 @@ function normMonth(v){
 function normalize(key, rows){
   const sc = SCHEMA[key], errs = [];
   const mapped = rows.map(r => { const o = {}; for (const [k, v] of Object.entries(r)) o[String(k).trim().toLowerCase().replace(/[\s\-]+/g, "_")] = v; return o; });
-  if (!mapped.length) return { rows:[], errs:[`${sc.sheet}: no rows found.`] };
-  const missing = sc.cols.filter(c => !(c in mapped[0]) && c !== "id");
-  if (missing.length) return { rows:[], errs:[`${sc.sheet}: missing column(s) ${missing.join(", ")}. Expected: ${sc.cols.join(", ")}.`] };
+  if (!mapped.length) return { rows:[], errs:[t("tNoRows", { s:sc.sheet })] };
+  const missing = sc.cols.filter(c => !(c in mapped[0]));
+  if (missing.length) return { rows:[], errs:[t("tMissing", { s:sc.sheet, c:missing.join(", "), e:sc.cols.join(", ") })] };
   let bad = 0;
   const out = mapped.map(o => { const r = {}; sc.cols.forEach(c => {
       let v = o[c];
-      if (sc.nums.includes(c)){ v = typeof v === "number" ? v : parseFloat(String(v ?? "").replace(/[,\s]|SAR|ر\.?س/gi, "")); if (!isFinite(v)){ v = 0; bad++; } }
+      if (sc.nums.includes(c)){ v = typeof v === "number" ? v : parseFloat(String(v ?? "").replace(/[,\s]|SAR|ر\.?س|ريال/gi, "")); if (!isFinite(v)){ v = 0; bad++; } }
       else if (c === "month") v = normMonth(v); else v = String(v ?? "").trim();
       r[c] = v; });
     if (key === "campaigns") r.id = uid();
     return r; }).filter(r => sc.cols.some(c => !sc.nums.includes(c) && r[c]));
-  if (bad) errs.push(`${sc.sheet}: ${bad} number cell(s) were empty or not numbers and were set to 0.`);
-  if (sc.cols.includes("month")){ const badM = out.filter(r => !/^\d{4}-\d{2}$/.test(r.month)).length; if (badM) errs.push(`${sc.sheet}: ${badM} row(s) have a month that is not YYYY-MM.`); }
+  if (bad) errs.push(t("tBadNum", { s:sc.sheet, n:bad }));
+  if (sc.cols.includes("month")){ const badM = out.filter(r => !/^\d{4}-\d{2}$/.test(r.month)).length; if (badM) errs.push(t("tBadMonth", { s:sc.sheet, n:badM })); }
   return { rows:out, errs };
 }
 async function handleFile(file, forcedTarget){
-  const log = $("#importLog"); log.hidden = false; log.textContent = "Reading " + file.name + "…";
-  if (!window.XLSX){ log.textContent = "The Excel reader did not load. Check your connection and reload the page."; return; }
+  const log = $("#importLog"); log.hidden = false; log.textContent = t("tReading", { f:file.name });
+  if (!window.XLSX){ log.textContent = t("tNoXlsx"); toast(t("tNoXlsx")); return; }
   try {
-    const buf = await file.arrayBuffer(), wb = XLSX.read(buf, { type:"array", cellDates:true }), target = forcedTarget || $("#importTarget").value, msgs = [];
-    const plan = [];
+    const buf = await file.arrayBuffer(), wb = XLSX.read(buf, { type:"array", cellDates:true }), target = forcedTarget || $("#importTarget").value, msgs = [], plan = [];
     if (target === "auto"){
       for (const [key, sc] of Object.entries(SCHEMA)){ const name = wb.SheetNames.find(s => s.trim().toLowerCase() === sc.sheet.toLowerCase()); if (name) plan.push([key, name]); }
-      if (!plan.length){ // no sheet names matched: recognise each sheet by its columns
+      if (!plan.length){
         const best = name => { const hdr = (XLSX.utils.sheet_to_json(wb.Sheets[name], { header:1 })[0] || []).map(h => String(h).trim().toLowerCase().replace(/[\s\-]+/g, "_"));
           return Object.entries(SCHEMA).filter(([, sc]) => sc.cols.every(c => hdr.includes(c))).sort((x, y) => y[1].cols.length - x[1].cols.length).map(([k]) => k)[0]; };
         wb.SheetNames.forEach(name => { const k = best(name); if (k && !plan.some(p => p[0] === k)) plan.push([k, name]); });
       }
-      if (!plan.length){ log.textContent = `No sheet names matched (${Object.values(SCHEMA).map(s => s.sheet).join(", ")}). Rename the sheets or choose which dataset to import into.`; return; }
+      if (!plan.length){ log.textContent = t("tNoMatch", { s:Object.values(SCHEMA).map(s => s.sheet).join(", ") }); toast(t("toastNone")); show("data"); return; }
     } else plan.push([target, wb.SheetNames[0]]);
     let changed = 0;
     for (const [key, name] of plan){
       const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], { defval:"", raw:true });
       const { rows:out, errs } = normalize(key, rows); msgs.push(...errs);
-      if (out.length){ S.data[key] = out; changed++; msgs.unshift(`✓ ${SCHEMA[key].sheet}: ${out.length} rows loaded.`); }
+      if (out.length){ S.data[key] = out; changed++; msgs.unshift(t("tLoaded", { s:SCHEMA[key].sheet, n:out.length })); }
     }
-    if (changed){ S.demo = false; save(); renderAll(); }
-    log.textContent = msgs.join("\n"); log.style.whiteSpace = "pre-wrap";
-    toast(changed ? `Loaded ${changed} sheet(s) from ${file.name}.` : "No data loaded. See Data & settings for details.");
+    if (changed){ S.demo = false; if (S.settings.hospital === DEFAULT_SETTINGS.hospital) S.settings.hospital = ""; save(); renderAll(); }
+    log.textContent = msgs.join("\n");
+    toast(changed ? t("toastLoaded", { n:changed, f:file.name }) : t("toastNone"));
     if (!changed) show("data");
-  } catch(e){ log.textContent = "Could not read this file: " + e.message; toast("Could not read this file."); }
-  $("#fileIn").value = "";
+  } catch(e){ log.textContent = t("tReadErr", { e:e.message }); toast(t("toastReadErr")); }
 }
 async function download(blankOnly){
-  if (!window.XLSX){ toast("Excel library did not load."); return; }
+  if (!window.XLSX){ toast(t("toastNoXlsx")); return; }
   const wb = XLSX.utils.book_new();
-  const readme = [["Hospital Marketing Compass — data template"], [""], ["Fill each sheet with your hospital's numbers. Keep the column names exactly as they are."], ["Use grouped numbers only. Never put patient names, file numbers or phone numbers in this file."], [""], ["Sheet", "What it holds", "Columns"]]
-    .concat(Object.values(SCHEMA).map(s => [s.sheet, s.desc, s.cols.join(", ")]));
+  const readme = [[I18N.ar.readmeTitle], [I18N.en.readmeTitle], [""], [I18N.ar.readme1], [I18N.en.readme1], [I18N.ar.readme2], [I18N.en.readme2], [""],
+    ["Sheet / الورقة", "Columns / الأعمدة", "الشرح", "Description"]]
+    .concat(Object.entries(SCHEMA).map(([k, s]) => [s.sheet, s.cols.join(", "), I18N.ar["desc_" + k], I18N.en["desc_" + k]]));
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(readme), "README");
   for (const [key, sc] of Object.entries(SCHEMA)){
     const rows = blankOnly ? [] : S.data[key].map(r => { const o = {}; sc.cols.forEach(c => o[c] = r[c]); return o; });
     XLSX.utils.book_append_sheet(wb, rows.length ? XLSX.utils.json_to_sheet(rows, { header:sc.cols }) : XLSX.utils.aoa_to_sheet([sc.cols]), sc.sheet);
   }
-  const buf = XLSX.write(wb, { bookType:"xlsx", type:"array" });
-  const fname = blankOnly ? "hospital-marketing-template.xlsx" : "hospital-marketing-data.xlsx";
+  const buf = XLSX.write(wb, { bookType:"xlsx", type:"array" }), fname = blankOnly ? t("fileBlank") : t("fileFull");
   if (!downloadsApi){
     try { const url = URL.createObjectURL(new Blob([buf], { type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
-      const a = document.createElement("a"); a.href = url; a.download = fname; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000); toast("File downloaded."); }
-    catch(e){ toast("Could not download the file."); }
+      const a = document.createElement("a"); a.href = url; a.download = fname; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000); toast(t("toastDl")); }
+    catch(e){ toast(t("toastDlErr")); }
     return;
   }
-  try { await downloadsApi.save({ filename: blankOnly ? "hospital-marketing-template.xlsx" : "hospital-marketing-data.xlsx", data:buf }); toast("File saved."); }
-  catch(e){ if (e && e.code !== "declined") toast("Could not save the file (" + (e.code || "error") + ")."); }
+  try { await downloadsApi.save({ filename:fname, data:buf }); toast(t("toastSaved")); }
+  catch(e){ if (e && e.code !== "declined") toast(t("toastDlErr")); }
 }
 function renderData(){
-  $("#schemaTable").innerHTML = `<thead><tr><th>Sheet</th><th>Rows now</th><th>Columns</th><th>What it holds</th></tr></thead><tbody>` +
-    Object.entries(SCHEMA).map(([k, s]) => `<tr><td><b>${s.sheet}</b></td><td class="n">${fmt(S.data[k].length)}</td><td class="wrap"><code>${s.cols.join(", ")}</code></td><td class="wrap">${esc(s.desc)}</td></tr>`).join("") + "</tbody>";
+  $("#schemaTable").innerHTML = `<thead><tr><th>${t("thSheet")}</th><th class="n">${t("thRowsNow")}</th><th>${t("thColumns")}</th><th>${t("thHolds")}</th></tr></thead><tbody>` +
+    Object.entries(SCHEMA).map(([k, s]) => `<tr><td><b><bdi>${s.sheet}</bdi></b></td><td class="n">${fmt(S.data[k].length)}</td><td class="wrap"><code>${s.cols.join(", ")}</code></td><td class="wrap">${esc(t("desc_" + k))}</td></tr>`).join("") + "</tbody>";
   const st = S.settings; ["hospital","currency","utilLow","utilHigh","noShow","conv","decline","concentration","roas"].forEach(k => { $("#s-" + k).value = st[k]; });
 }
 
-/* ---------- wiring ---------- */
+/* ================= wiring ================= */
 const RENDER = { overview:renderOverview, problems:renderProblems, audience:renderAudience, campaigns:renderCampaigns, plan:renderPlan, advisor:() => {}, data:renderData };
 let active = "overview";
 function show(tab){
@@ -919,14 +1076,20 @@ function show(tab){
   if (location.hash.slice(1) !== tab) history.replaceState(null, "", tab === "overview" ? location.pathname + location.search : "#" + tab);
 }
 function renderAll(){ renderHeader(); show(active); }
+function setLang(l){
+  if (l === LANG) return; LANG = l;
+  try { localStorage.setItem("hmc_lang", l); } catch(e){}
+  applyStatic(); renderAll();
+}
 
+document.querySelector(".lang").addEventListener("click", e => { const b = e.target.closest("[data-lang]"); if (b) setLang(b.dataset.lang); });
 document.querySelector("nav.tabs").addEventListener("click", e => { const b = e.target.closest("button[data-tab]"); if (b) show(b.dataset.tab); });
 document.addEventListener("click", e => {
   const g = e.target.closest("[data-goto]"); if (g){ show(g.dataset.goto); window.scrollTo(0, 0); return; }
   const add = e.target.closest("[data-add]");
   if (add){ const i = diagnose().find(x => x.id === add.dataset.add); if (!i) return; const title = i.actions[+add.dataset.k];
-    if (S.actions.some(a => a.title === title && a.dept === i.dept)){ toast("Already in the plan."); return; }
-    S.actions.push({ id:uid(), title, dept:i.dept, owner:"", due:"", status:"todo", why:i.title }); save(); renderHeader(); add.textContent = "✓ Added"; add.disabled = true; toast("Added to the action plan."); return; }
+    if (S.actions.some(a => a.title === title && a.dept === i.dept)){ toast(t("toastInPlan")); return; }
+    S.actions.push({ id:uid(), title, dept:i.dept, owner:"", due:"", status:"todo", why:i.title }); save(); renderHeader(); add.textContent = t("added"); add.disabled = true; toast(t("toastAdded")); return; }
   const dc = e.target.closest("[data-delcamp]"); if (dc){ S.data.campaigns = S.data.campaigns.filter(c => c.id !== dc.dataset.delcamp); save(); renderAll(); return; }
   const da = e.target.closest("[data-delact]"); if (da){ S.actions = S.actions.filter(a => a.id !== da.dataset.delact); save(); renderPlan(); return; }
 });
@@ -938,32 +1101,31 @@ $("#segDept").addEventListener("change", renderAudience);
 $("#campForm").addEventListener("submit", e => { e.preventDefault();
   const v = id => $("#cf-" + id).value;
   S.data.campaigns.push({ id:uid(), name:v("name").trim(), channel:v("channel").trim(), department:v("dept"), month:normMonth(v("month")), spend:+v("spend"), leads:+v("leads"), bookings:+v("bookings"), revenue:+v("revenue") });
-  save(); e.target.reset(); renderAll(); toast("Campaign added."); });
+  save(); e.target.reset(); renderAll(); toast(t("toastCamp")); });
 $("#planForm").addEventListener("submit", e => { e.preventDefault();
   S.actions.push({ id:uid(), title:$("#pf-title").value.trim(), dept:$("#pf-dept").value, owner:$("#pf-owner").value.trim(), due:$("#pf-due").value, status:"todo" });
-  save(); e.target.reset(); renderPlan(); toast("Action added."); });
+  save(); e.target.reset(); renderPlan(); toast(t("toastAct")); });
 $("#setForm").addEventListener("submit", e => { e.preventDefault();
   ["utilLow","utilHigh","noShow","conv","decline","concentration","roas"].forEach(k => { const v = parseFloat($("#s-" + k).value); if (isFinite(v)) S.settings[k] = v; });
-  S.settings.hospital = $("#s-hospital").value.trim() || "My Hospital"; S.settings.currency = $("#s-currency").value.trim() || "SAR";
-  save(); renderHeader(); toast("Settings saved."); });
-$("#fileIn").addEventListener("change", e => { const f = e.target.files[0]; if (f) handleFile(f); });
+  S.settings.hospital = $("#s-hospital").value.trim(); S.settings.currency = $("#s-currency").value.trim() || "SAR";
+  save(); renderAll(); toast(t("toastSet")); });
+$("#fileIn").addEventListener("change", e => { const f = e.target.files[0]; if (f) handleFile(f); e.target.value = ""; });
 const quick = $("#quickFile"), dz = $("#dropZone");
 $("#hdrUpload").addEventListener("click", () => quick.click());
 dz.addEventListener("click", () => quick.click());
 dz.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); quick.click(); } });
 quick.addEventListener("change", e => { const f = e.target.files[0]; if (f) handleFile(f, "auto").then(() => { quick.value = ""; }); });
-["dragenter","dragover"].forEach(t => dz.addEventListener(t, e => { e.preventDefault(); dz.classList.add("over"); }));
-["dragleave","drop"].forEach(t => dz.addEventListener(t, e => { e.preventDefault(); dz.classList.remove("over"); }));
+["dragenter","dragover"].forEach(x => dz.addEventListener(x, e => { e.preventDefault(); dz.classList.add("over"); }));
+["dragleave","drop"].forEach(x => dz.addEventListener(x, e => { e.preventDefault(); dz.classList.remove("over"); }));
 dz.addEventListener("drop", e => { const f = e.dataTransfer && e.dataTransfer.files[0]; if (f) handleFile(f, "auto"); });
 $("#obTemplate").addEventListener("click", () => download(false));
 $("#dlTemplate").addEventListener("click", () => download(false));
 $("#dlBlank").addEventListener("click", () => download(true));
 let resetArmed = false;
 $("#resetDemo").addEventListener("click", e => {
-  if (!resetArmed){ resetArmed = true; e.target.textContent = "Press again to replace all data with demo data"; setTimeout(() => { resetArmed = false; e.target.textContent = "Reset to demo data"; }, 4000); return; }
-  resetArmed = false; e.target.textContent = "Reset to demo data";
-  S = { settings:{ ...DEFAULT_SETTINGS }, data:genDemo(), actions:S.actions, demo:true }; save(); renderAll(); toast("Demo data restored. Your action plan was kept."); });
-$("#presets").innerHTML = PRESETS.map(p => `<button class="chip" type="button" dir="auto">${esc(p)}</button>`).join("");
+  if (!resetArmed){ resetArmed = true; e.target.textContent = t("resetConfirm"); setTimeout(() => { resetArmed = false; e.target.textContent = t("resetDemo"); }, 4000); return; }
+  resetArmed = false; e.target.textContent = t("resetDemo");
+  S = { settings:{ ...DEFAULT_SETTINGS }, data:genDemo(), actions:S.actions, demo:true }; save(); renderAll(); toast(t("toastReset")); });
 $("#presets").addEventListener("click", e => { const c = e.target.closest(".chip"); if (c){ $("#askBox").value = c.textContent; ask(c.textContent); } });
 $("#askBtn").addEventListener("click", () => ask($("#askBox").value));
 $("#stopBtn").addEventListener("click", () => abortCtl && abortCtl.abort());
@@ -972,6 +1134,7 @@ const mq = window.matchMedia ? matchMedia("(prefers-color-scheme: dark)") : null
 if (mq && mq.addEventListener) mq.addEventListener("change", () => show(active));
 new MutationObserver(() => show(active)).observe(document.documentElement, { attributes:true, attributeFilter:["data-theme"] });
 
+applyStatic();
 renderHeader();
 show(location.hash.slice(1) || "overview");
 
@@ -989,7 +1152,6 @@ if ("serviceWorker" in navigator && location.protocol === "https:" && !location.
     }
   } catch(e){}
   if (sampleFn){ $("#advisorOn").hidden = false; $("#advisorOff").hidden = true; }
-  $("#dlNote").textContent = "The full template holds the current numbers, so you can see the expected format, then replace them.";
 })();
 </script>
 </body>
