@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hospital Marketing Compass</title>
+<meta name="description" content="Marketing analytics for private hospitals: capacity, no-shows, conversion, target segments and campaign return.">
+<meta name="theme-color" content="#0A6B63">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Marketing Compass">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout: sticky header + scrollable tab strip; each tab is a stack of panels, summary first, detail below */
+  --bg:#F2F5F4; --surface:#FFFFFF; --ink:#14201E; --muted:#5B6967; --line:#D9E2E0;
+  --accent:#0A6B63; --accent-soft:#DDEFEC; --accent-ink:#FFFFFF;
+  --good:#1D7A3B; --warn:#A76300; --bad:#B42318;
+  --good-soft:#E3F3E8; --warn-soft:#FFF1D9; --bad-soft:#FCE6E3;
+  --display:"Sora", ui-sans-serif, system-ui, sans-serif;
+  --body:"IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1615; --surface:#172120; --ink:#E6EEEC; --muted:#9AABA8; --line:#2A3836;
+    --accent:#4FC2B6; --accent-soft:#183A36; --accent-ink:#06201D;
+    --good:#5BC583; --warn:#F0B04F; --bad:#F27A6B;
+    --good-soft:#173322; --warn-soft:#3A2C12; --bad-soft:#3D1D19;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1615; --surface:#172120; --ink:#E6EEEC; --muted:#9AABA8; --line:#2A3836;
+  --accent:#4FC2B6; --accent-soft:#183A36; --accent-ink:#06201D;
+  --good:#5BC583; --warn:#F0B04F; --bad:#F27A6B;
+  --good-soft:#173322; --warn-soft:#3A2C12; --bad-soft:#3D1D19;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.25}
+h1{font-size:18px;font-weight:700}
+h2{font-size:17px;font-weight:600}
+h3{font-size:15px;font-weight:600}
+.num,td.n,th.n{font-variant-numeric:tabular-nums}
+a{color:var(--accent)}
+button,select,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+header.top{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;max-width:1200px;margin:0 auto}
+.brand{display:flex;flex-direction:column;gap:2px;margin-right:auto;min-width:0}
+.brand small{color:var(--muted);font-size:12px}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.pill.demo{background:var(--warn-soft);color:var(--warn)}
+.pill.live{background:var(--good-soft);color:var(--good)}
+.pill.critical{background:var(--bad-soft);color:var(--bad)}
+.pill.warning{background:var(--warn-soft);color:var(--warn)}
+.pill.info{background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.period{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+select,input[type=text],input[type=number],input[type=date],textarea{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 10px;min-height:36px}
+textarea{width:100%;resize:vertical;min-height:80px}
+nav.tabs{display:flex;gap:2px;overflow-x:auto;padding:0 12px;max-width:1200px;margin:0 auto;scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs button{background:none;border:0;border-bottom:3px solid transparent;padding:10px 12px;font-weight:500;color:var(--muted);cursor:pointer;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+nav.tabs button .count{font-size:11px;background:var(--bad-soft);color:var(--bad);border-radius:999px;padding:0 6px;margin-left:4px;font-weight:600}
+
+main{max-width:1200px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:16px}
+section.tab{display:none;flex-direction:column;gap:16px}
+section.tab.active{display:flex}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.panel-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.panel-head p,.hint{margin:0;color:var(--muted);font-size:13px}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+.kpis{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.kpi .label{font-size:12px;color:var(--muted);font-weight:500}
+.kpi .value{font-family:var(--display);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+.kpi .delta{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
+.up-good,.down-good{color:var(--good)} .up-bad,.down-bad{color:var(--bad)} .flat{color:var(--muted)}
+.chart{position:relative;height:260px}
+.chart.tall{height:320px}
+
+.issues{display:flex;flex-direction:column;gap:10px}
+.issue{border:1px solid var(--line);border-left:4px solid var(--muted);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.issue.critical{border-left-color:var(--bad)} .issue.warning{border-left-color:var(--warn)} .issue.info{border-left-color:var(--accent)}
+.issue .meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--muted)}
+.issue p{margin:0;font-size:14px}
+.issue ul{margin:0;padding-left:18px;font-size:14px;display:flex;flex-direction:column;gap:3px}
+.impact{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 12px;cursor:pointer;font-weight:500;min-height:36px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.small{padding:3px 9px;min-height:28px;font-size:13px}
+.btn.danger{color:var(--bad)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{font-weight:600;color:var(--muted);font-size:12px;background:var(--bg);position:sticky;top:0}
+td.n,th.n{text-align:right}
+tr:last-child td{border-bottom:0}
+td.wrap{white-space:normal;min-width:220px}
+.heat td.h{text-align:right;font-variant-numeric:tabular-nums}
+
+.opps{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}
+.opp{border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:6px}
+.opp .rank{font-family:var(--display);font-weight:700;color:var(--accent);font-size:13px}
+.opp .who{font-weight:600}
+.opp .why{font-size:13px;color:var(--muted)}
+.scorebar{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.scorebar i{display:block;height:100%;background:var(--accent)}
+
+form.inline{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));align-items:end}
+form.inline label,.field{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);font-weight:500}
+form.inline label input,form.inline label select,.field input,.field select{color:var(--ink);font-size:14px}
+details summary{cursor:pointer;font-weight:600}
+.note{font-size:13px;color:var(--muted);background:var(--bg);border-radius:8px;padding:10px 12px}
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20;max-width:90vw}
+.toast.show{opacity:1}
+.answer{white-space:pre-wrap;font-size:14.5px;line-height:1.6;max-width:75ch}
+.answer[dir=rtl]{text-align:right}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);border-radius:999px;padding:5px 11px;background:var(--surface);cursor:pointer;font-size:13px}
+.chip:hover{border-color:var(--accent)}
+.empty{color:var(--muted);font-size:14px;padding:8px 0}
+.status-todo{color:var(--muted)} .status-doing{color:var(--warn)} .status-done{color:var(--good)}
+@media (max-width:480px){ .kpi .value{font-size:19px} .chart{height:230px} }
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="bar">
+    <div class="brand">
+      <h1 id="hospName">Hospital Marketing Compass</h1>
+      <small><span id="dataBadge" class="pill demo">Demo data</span> <span id="rangeLabel"></span></small>
+    </div>
+    <label class="period" for="periodSel">Compare last
+      <select id="periodSel">
+        <option value="3">3 months</option>
+        <option value="6">6 months</option>
+      </select>
+    </label>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="overview" aria-selected="true">Overview</button>
+    <button role="tab" data-tab="problems" aria-selected="false">Problems<span class="count" id="issueCount"></span></button>
+    <button role="tab" data-tab="audience" aria-selected="false">Target audience</button>
+    <button role="tab" data-tab="campaigns" aria-selected="false">Campaigns</button>
+    <button role="tab" data-tab="plan" aria-selected="false">Action plan</button>
+    <button role="tab" data-tab="advisor" aria-selected="false">AI advisor</button>
+    <button role="tab" data-tab="data" aria-selected="false">Data &amp; settings</button>
+  </nav>
+</header>
+
+<main>
+  <!-- OVERVIEW -->
+  <section class="tab active" id="tab-overview">
+    <div class="kpis" id="kpis"></div>
+    <div class="grid g2">
+      <div class="panel">
+        <div class="panel-head"><h2>Patient visits by month</h2><p>Attended visits and new patients</p></div>
+        <div class="chart"><canvas id="chTrend"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Capacity used by department</h2><p id="utilHint"></p></div>
+        <div class="chart"><canvas id="chUtil"></canvas></div>
+      </div>
+    </div>
+    <div class="grid g2">
+      <div class="panel">
+        <div class="panel-head"><h2>Where new patients come from</h2><p>Share of new patients, selected period</p></div>
+        <div class="chart"><canvas id="chSources"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Top problems right now</h2><button class="btn small" data-goto="problems">See all</button></div>
+        <div class="issues" id="topIssues"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEMS -->
+  <section class="tab" id="tab-problems">
+    <div class="panel">
+      <div class="panel-head">
+        <div><h2>Problems that need marketing work</h2><p>Found automatically from the data. Thresholds can be changed under Data &amp; settings.</p></div>
+        <select id="sevFilter" aria-label="Filter by severity">
+          <option value="all">All severities</option><option value="critical">Critical only</option><option value="warning">Warnings only</option><option value="info">Opportunities</option>
+        </select>
+      </div>
+      <p class="note">Monthly impact figures are <b>estimates</b>: they assume the gap could be closed at the department's average revenue per visit. Use them to rank problems, not as forecasts.</p>
+      <div class="issues" id="allIssues"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Department scorecard</h2><p>Selected period</p></div>
+      <div class="tablewrap"><table id="deptTable"></table></div>
+    </div>
+  </section>
+
+  <!-- AUDIENCE -->
+  <section class="tab" id="tab-audience">
+    <div class="panel">
+      <div class="panel-head"><div><h2>Who to target next</h2><p>Segments ranked by value per patient, growth, and free capacity in their department</p></div></div>
+      <div class="opps" id="opps"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Explore patient segments</h2>
+        <div class="row">
+          <label class="field" for="segDim">Group by
+            <select id="segDim"><option value="age_group">Age group</option><option value="area">Area</option><option value="payer">Payer</option><option value="department">Department</option></select>
+          </label>
+          <label class="field" for="segDept">Department
+            <select id="segDept"></select>
+          </label>
+        </div>
+      </div>
+      <div class="grid g2">
+        <div class="chart"><canvas id="chSeg"></canvas></div>
+        <div class="tablewrap"><table id="segTable"></table></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Department × age group</h2><p>Share of each department's patients</p></div>
+      <div class="tablewrap"><table class="heat" id="heat"></table></div>
+    </div>
+  </section>
+
+  <!-- CAMPAIGNS -->
+  <section class="tab" id="tab-campaigns">
+    <div class="kpis" id="campKpis"></div>
+    <div class="grid g2">
+      <div class="panel">
+        <div class="panel-head"><h2>Return per riyal by channel</h2><p>Revenue ÷ spend. Below 1.0 loses money.</p></div>
+        <div class="chart"><canvas id="chChannel"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Cost per booking by channel</h2><p id="cpbHint"></p></div>
+        <div class="chart"><canvas id="chCpb"></canvas></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>All campaigns</h2><p>Sorted by return on spend</p></div>
+      <div class="tablewrap"><table id="campTable"></table></div>
+      <details>
+        <summary>Add a campaign</summary>
+        <form class="inline" id="campForm" style="margin-top:12px">
+          <label for="cf-name">Name<input type="text" id="cf-name" required></label>
+          <label for="cf-channel">Channel<input type="text" id="cf-channel" list="channelList" required></label>
+          <label for="cf-dept">Department<select id="cf-dept"></select></label>
+          <label for="cf-month">Month (YYYY-MM)<input type="text" id="cf-month" placeholder="2026-11" pattern="\d{4}-\d{2}" required></label>
+          <label for="cf-spend">Spend<input type="number" id="cf-spend" min="0" required></label>
+          <label for="cf-leads">Leads<input type="number" id="cf-leads" min="0" required></label>
+          <label for="cf-bookings">Bookings<input type="number" id="cf-bookings" min="0" required></label>
+          <label for="cf-revenue">Revenue<input type="number" id="cf-revenue" min="0" required></label>
+          <button class="btn primary" type="submit">Add campaign</button>
+        </form>
+        <datalist id="channelList"></datalist>
+      </details>
+    </div>
+  </section>
+
+  <!-- PLAN -->
+  <section class="tab" id="tab-plan">
+    <div class="panel">
+      <div class="panel-head"><div><h2>Action plan</h2><p>Add actions from the Problems tab or write your own. Saved in this browser.</p></div><span id="planStats" class="hint"></span></div>
+      <div class="tablewrap"><table id="planTable"></table></div>
+      <form class="inline" id="planForm">
+        <label for="pf-title" style="grid-column:span 2">Action<input type="text" id="pf-title" required placeholder="e.g. Meet HR of 3 nearby companies about physio packages"></label>
+        <label for="pf-dept">Department<select id="pf-dept"></select></label>
+        <label for="pf-owner">Owner<input type="text" id="pf-owner" placeholder="Name"></label>
+        <label for="pf-due">Due date<input type="date" id="pf-due"></label>
+        <button class="btn primary" type="submit">Add action</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ADVISOR -->
+  <section class="tab" id="tab-advisor">
+    <div class="panel">
+      <div class="panel-head"><div><h2>Ask the AI advisor</h2><p>Claude reads a summary of the numbers in this app (no patient names) and answers. Ask in Arabic or English.</p></div></div>
+      <div id="advisorOff" class="note" hidden>The AI advisor is available only when the app is opened inside Claude. Everything else works here, including offline.</div>
+      <div id="advisorOn">
+        <div class="chips" id="presets"></div>
+        <label for="askBox" class="hint" style="display:block;margin:10px 0 4px">Your question</label>
+        <textarea id="askBox" placeholder="ما أفضل 3 حملات أبدأ فيها الشهر القادم بميزانية 50 ألف ريال؟"></textarea>
+        <div class="row" style="margin-top:10px"><button class="btn primary" id="askBtn">Ask</button><button class="btn" id="stopBtn" hidden>Stop</button></div>
+      </div>
+      <div class="answer" id="answer"></div>
+    </div>
+  </section>
+
+  <!-- DATA -->
+  <section class="tab" id="tab-data">
+    <div class="panel">
+      <div class="panel-head"><div><h2>Load your hospital's data</h2><p>Upload one Excel workbook with up to four sheets, or one CSV at a time. Use summary numbers only, no patient names or file numbers.</p></div></div>
+      <div class="row">
+        <button class="btn primary" id="dlTemplate">Download Excel template</button>
+        <button class="btn" id="dlBlank">Download blank template</button>
+      </div>
+      <p class="hint" id="dlNote"></p>
+      <div class="row">
+        <label class="field" for="importTarget">Import into
+          <select id="importTarget">
+            <option value="auto">Auto: match sheet names</option>
+            <option value="depts">Departments_Monthly</option>
+            <option value="sources">Sources_Monthly</option>
+            <option value="segments">Segments</option>
+            <option value="campaigns">Campaigns</option>
+          </select>
+        </label>
+        <label class="field" for="fileIn">File (.xlsx, .xls or .csv)
+          <input type="file" id="fileIn" accept=".xlsx,.xls,.csv">
+        </label>
+      </div>
+      <div id="importLog" class="note" hidden></div>
+      <div class="tablewrap"><table id="schemaTable"></table></div>
+      <div class="row"><button class="btn danger" id="resetDemo">Reset to demo data</button></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Settings and thresholds</h2><p>Problems are flagged when a department crosses these lines</p></div>
+      <form class="inline" id="setForm">
+        <label for="s-hospital">Hospital name<input type="text" id="s-hospital"></label>
+        <label for="s-currency">Currency<input type="text" id="s-currency"></label>
+        <label for="s-utilLow">Idle capacity below (%)<input type="number" id="s-utilLow" min="0" max="100"></label>
+        <label for="s-utilHigh">Near full above (%)<input type="number" id="s-utilHigh" min="0" max="100"></label>
+        <label for="s-noShow">No-show above (%)<input type="number" id="s-noShow" min="0" max="100"></label>
+        <label for="s-conv">Inquiry conversion below (%)<input type="number" id="s-conv" min="0" max="100"></label>
+        <label for="s-decline">Visit drop worse than (%)<input type="number" id="s-decline" min="0" max="100"></label>
+        <label for="s-concentration">One payer/source above (%)<input type="number" id="s-concentration" min="0" max="100"></label>
+        <label for="s-roas">Campaign return below (×)<input type="number" id="s-roas" min="0" step="0.1"></label>
+        <button class="btn primary" type="submit">Save settings</button>
+      </form>
+    </div>
+  </section>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="vendor/chart.umd.js"></script>
+<script src="vendor/xlsx.full.min.js"></script>
+<script>
+"use strict";
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const sum = (arr, k) => arr.reduce((a, r) => a + (+(k ? r[k] : r) || 0), 0);
+const pct = (v, d = 0) => v == null || !isFinite(v) ? "–" : (v * 100).toFixed(d) + "%";
+const fmt = v => v == null || !isFinite(v) ? "–" : Math.round(v).toLocaleString("en-US");
+function money(v){
+  if (v == null || !isFinite(v)) return "–";
+  const c = S.settings.currency || "SAR", a = Math.abs(v);
+  const s = a >= 1e6 ? (v/1e6).toFixed(2) + "M" : a >= 1e4 ? (v/1e3).toFixed(0) + "K" : Math.round(v).toLocaleString("en-US");
+  return c + " " + s;
+}
+function toast(msg){ const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), 2600); }
+function rng(seed){ return function(){ seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const uid = () => Math.random().toString(36).slice(2, 9);
+
+/* ---------- schema ---------- */
+const SCHEMA = {
+  depts:     { sheet:"Departments_Monthly", cols:["month","department","capacity_slots","booked","attended","new_patients","inquiries","revenue"],
+               nums:["capacity_slots","booked","attended","new_patients","inquiries","revenue"],
+               desc:"One row per department per month. capacity_slots = appointment slots available; booked = appointments made; attended = visits that happened; inquiries = calls/WhatsApp/web requests from new people." },
+  sources:   { sheet:"Sources_Monthly", cols:["month","source","new_patients"], nums:["new_patients"],
+               desc:"How new patients heard about you, per month (from registration desk or call center question)." },
+  segments:  { sheet:"Segments", cols:["department","age_group","area","payer","patients","prev_patients","revenue"], nums:["patients","prev_patients","revenue"],
+               desc:"Grouped patient counts for the last 12 months (patients) and the 12 months before (prev_patients). Groups only, never individual patients." },
+  campaigns: { sheet:"Campaigns", cols:["name","channel","department","month","spend","leads","bookings","revenue"], nums:["spend","leads","bookings","revenue"],
+               desc:"One row per campaign. leads = people who responded; bookings = appointments from the campaign; revenue = revenue from those bookings." }
+};
+const NUMK = SCHEMA.depts.nums;
+const DEFAULT_SETTINGS = { hospital:"Demo Private Hospital", currency:"SAR", utilLow:65, utilHigh:92, noShow:15, conv:40, decline:10, concentration:40, roas:1, period:3 };
+
+/* ---------- demo data (clearly marked) ---------- */
+function genDemo(){
+  const r = rng(42), n = (v, p = .04) => v * (1 + (r() * 2 - 1) * p);
+  const months = []; let y = 2025, m = 11;
+  for (let i = 0; i < 12; i++){ months.push(`${y}-${String(m).padStart(2,"0")}`); if (++m > 12){ m = 1; y++; } }
+  const D = [
+    {d:"Dermatology",  cap:1400,u:.86,t:.006, ns:.08,cv:.55,rv:420},
+    {d:"Dental",       cap:1600,u:.83,t:0,    ns:.10,cv:.50,rv:380},
+    {d:"Orthopedics",  cap:900, u:.79,t:.002, ns:.09,cv:.48,rv:650},
+    {d:"Pediatrics",   cap:1300,u:.81,t:0,    ns:.21,cv:.52,rv:300},
+    {d:"OB/GYN",       cap:1000,u:.75,t:.003, ns:.11,cv:.46,rv:520},
+    {d:"Cardiology",   cap:700, u:.71,t:0,    ns:.07,cv:.31,rv:780},
+    {d:"Ophthalmology",cap:800, u:.90,t:-.025,ns:.09,cv:.47,rv:450},
+    {d:"Physiotherapy",cap:1100,u:.53,t:0,    ns:.14,cv:.43,rv:260}
+  ];
+  const depts = [];
+  months.forEach((mo, i) => D.forEach(x => {
+    const u = Math.min(.98, Math.max(.2, n(x.u + x.t * i, .03)));
+    const booked = Math.round(x.cap * u), attended = Math.round(booked * (1 - n(x.ns, .08)));
+    const newp = Math.round(attended * n(.34, .06)), inq = Math.round(newp / n(x.cv, .05));
+    depts.push({ month:mo, department:x.d, capacity_slots:x.cap, booked, attended, new_patients:newp, inquiries:inq, revenue:Math.round(attended * n(x.rv, .03)) });
+  }));
+  const SRC = [["Insurance network",.30,0],["Doctor referral",.14,0],["Google Search",.13,.002],["Instagram",.10,0],["Snapchat",.09,.001],["TikTok",.04,.004],["Corporate contracts",.07,0],["Walk-in / word of mouth",.13,-.004]];
+  const sources = [];
+  months.forEach((mo, i) => {
+    const tot = sum(depts.filter(z => z.month === mo), "new_patients");
+    const w = SRC.map(s => Math.max(.01, n(s[1] + s[2] * i, .07))), ws = sum(w);
+    SRC.forEach((s, j) => sources.push({ month:mo, source:s[0], new_patients:Math.round(tot * w[j] / ws) }));
+  });
+  const AGES = ["0-14","15-24","25-44","45-64","65+"];
+  const AW = { Dermatology:[.08,.30,.42,.15,.05], Dental:[.18,.20,.34,.20,.08], Orthopedics:[.05,.12,.25,.33,.25], Pediatrics:[1,0,0,0,0],
+               "OB/GYN":[0,.15,.70,.15,0], Cardiology:[0,.02,.15,.43,.40], Ophthalmology:[.08,.07,.20,.35,.30], Physiotherapy:[.03,.15,.32,.32,.18] };
+  const AREAS = [["North",.32,.10],["East",.22,.03],["Central",.18,-.05],["West",.16,.04],["South",.12,-.02]];
+  const PAY = [["Insurer A",.44,.92],["Insurer B",.18,1],["Insurer C",.10,.97],["Cash / self-pay",.18,1.18],["Corporate",.10,.9]];
+  const segments = [];
+  D.forEach(x => {
+    const uniq = sum(depts.filter(z => z.department === x.d), "attended") * .45;
+    AGES.forEach((ag, ai) => AREAS.forEach(([ar, aw, ag2]) => PAY.forEach(([py, pw, pm]) => {
+      const p = Math.round(uniq * AW[x.d][ai] * aw * pw * n(1, .25));
+      if (p < 3) return;
+      const growth = ag2 + x.t * 12 + (r() - .5) * .16 + (x.d === "Dermatology" && ai === 1 ? .12 : 0);
+      segments.push({ department:x.d, age_group:ag, area:ar, payer:py, patients:p, prev_patients:Math.max(1, Math.round(p / (1 + growth))), revenue:Math.round(p * x.rv * 1.6 * pm * n(1, .05)) });
+    })));
+  });
+  const campaigns = [
+    ["Ramadan skin care package","Instagram","Dermatology","2026-02",18000,640,210,96000],
+    ["Knee pain search ads","Google Search","Orthopedics","2026-03",22000,410,150,118000],
+    ["Pregnancy journey program","Instagram","OB/GYN","2026-04",14000,350,130,88000],
+    ["Heart check package","Google Search","Cardiology","2026-05",25000,300,48,21000],
+    ["Physio for office workers","Corporate contracts","Physiotherapy","2026-06",8000,260,120,31000],
+    ["Smile makeover reels","TikTok","Dental","2026-07",15000,900,170,82000],
+    ["Summer kids dental","Snapchat","Dental","2026-07",9000,480,140,47000],
+    ["Back-to-school checkups","Snapchat","Pediatrics","2026-08",12000,520,190,52000],
+    ["LASIK awareness","Instagram","Ophthalmology","2026-09",20000,380,60,17000],
+    ["GP referral visits","Doctor referral","Orthopedics","2026-10",6000,140,85,61000],
+    ["Physio short videos","TikTok","Physiotherapy","2026-10",7000,600,45,6000]
+  ].map(c => ({ id:uid(), name:c[0], channel:c[1], department:c[2], month:c[3], spend:c[4], leads:c[5], bookings:c[6], revenue:c[7] }));
+  return { depts, sources, segments, campaigns };
+}
+
+/* ---------- state ---------- */
+const STORE = "hmc_state_v1";
+let S;
+function load(){
+  try { const raw = localStorage.getItem(STORE); if (raw){ const s = JSON.parse(raw); if (s && s.data && s.data.depts){ s.settings = { ...DEFAULT_SETTINGS, ...s.settings }; return s; } } } catch(e){}
+  return { settings:{ ...DEFAULT_SETTINGS }, data:genDemo(), actions:[], demo:true };
+}
+function save(){ try { localStorage.setItem(STORE, JSON.stringify(S)); } catch(e){} }
+S = load();
+
+/* ---------- aggregation ---------- */
+const monthsAll = () => [...new Set(S.data.depts.map(r => r.month))].sort();
+function periods(){ const ms = monthsAll(), n = +S.settings.period || 3; return { cur:ms.slice(-n), prev:ms.slice(-2 * n, -n), n }; }
+function derive(a){
+  a.util = a.capacity_slots ? a.booked / a.capacity_slots : null;
+  a.noshow = a.booked ? 1 - a.attended / a.booked : null;
+  a.conv = a.inquiries ? a.new_patients / a.inquiries : null;
+  a.rpv = a.attended ? a.revenue / a.attended : null;
+  return a;
+}
+function blank(name){ const o = { department:name }; NUMK.forEach(k => o[k] = 0); return o; }
+function aggDepts(ms){
+  const set = new Set(ms), o = {};
+  for (const r of S.data.depts){ if (!set.has(r.month)) continue; const a = o[r.department] || (o[r.department] = blank(r.department)); NUMK.forEach(k => a[k] += +r[k] || 0); }
+  Object.values(o).forEach(derive); return o;
+}
+function totalOf(o){ const t = blank("All"); Object.values(o).forEach(a => NUMK.forEach(k => t[k] += a[k])); return derive(t); }
+const deptNames = () => [...new Set([...S.data.depts.map(r => r.department), ...S.data.segments.map(r => r.department)])].sort();
+
+/* ---------- diagnostics ---------- */
+const PLAYBOOK = {
+  idle: ["Run a targeted offer for this department's best segment (see Target audience).",
+         "Offer packages to HR teams of nearby companies (corporate contracts).",
+         "Tell referring GPs and specialists that same-week slots are open.",
+         "Make the open slots bookable online and on WhatsApp."],
+  decline: ["Check recent patient complaints and Google reviews for this department.",
+            "Check whether a doctor left or cut clinic hours.",
+            "Compare prices and offers of competing clinics nearby.",
+            "Invite past patients who are due for follow-up (only those who agreed to receive messages)."],
+  noshow: ["Send reminders 48 hours and 3 hours before the visit (patients who agreed to messages).",
+           "Call first-time patients the day before to confirm.",
+           "Add a one-tap reschedule link to every reminder.",
+           "Overbook the slots with the worst no-show rate by a small, safe margin."],
+  conv: ["Measure missed calls and response time on calls and WhatsApp.",
+         "Give the call center a script: price, insurance coverage, earliest slot.",
+         "Call back every inquiry that did not book within 24 hours.",
+         "Publish clear package prices for the most asked services."],
+  full: ["Pause ads that bring new patients to this department.",
+         "Move that budget to departments with free capacity.",
+         "Add clinic hours or a doctor before spending more here.",
+         "Review pricing: high demand can support premium packages."],
+  payer: ["Grow cash / self-pay packages for high-demand services.",
+          "Sign more corporate contracts to spread payer risk.",
+          "Review contract terms and rejection rates with the largest insurer."],
+  source: ["Test one new channel with a small budget each month.",
+           "Build a referral program with GPs and past patients.",
+           "Track the source of every new patient at registration."],
+  camp: ["Pause the campaign or cut its budget.",
+         "Check lead quality and how fast leads were called back.",
+         "Test a new offer or landing page before relaunching."]
+};
+const SEVRANK = { critical:0, warning:1, info:2 };
+function diagnose(){
+  const st = S.settings, { cur, prev, n } = periods(), C = aggDepts(cur), P = aggDepts(prev), I = [];
+  const per = `last ${n} months`;
+  for (const d of Object.values(C)){
+    const name = d.department, p = P[d.department], rpv = d.rpv || 0;
+    if (d.util != null && d.util * 100 < st.utilLow){
+      const target = st.utilLow / 100 + .1, idle = (target - d.util) * d.capacity_slots / n;
+      I.push({ key:"idle", sev:"critical", dept:name, title:`${name} uses only ${pct(d.util)} of its capacity`,
+        evidence:`About ${fmt(d.capacity_slots * (1 - d.util) / n)} empty slots a month (${per}). Line: ${st.utilLow}%.`,
+        impact: idle * (1 - (d.noshow || 0)) * rpv, impactNote:`if filled to ${Math.round(target * 100)}%` });
+    }
+    if (d.util != null && d.util * 100 > st.utilHigh){
+      I.push({ key:"full", sev:"info", dept:name, title:`${name} is nearly full (${pct(d.util)})`,
+        evidence:`Spending on new patients here adds waiting time, not visits. Line: ${st.utilHigh}%.`, impact:null });
+    }
+    if (p && p.attended > 0){
+      const ch = d.attended / p.attended - 1;
+      if (ch * 100 < -st.decline){
+        I.push({ key:"decline", sev: ch < -.2 ? "critical" : "warning", dept:name, title:`${name} visits fell ${pct(-ch)}`,
+          evidence:`${fmt(d.attended / n)} visits a month vs ${fmt(p.attended / n)} in the ${n} months before.`,
+          impact:(p.attended - d.attended) / n * rpv, impactNote:"to get back to the previous level" });
+      }
+    }
+    if (d.noshow != null && d.noshow * 100 > st.noShow){
+      I.push({ key:"noshow", sev:"warning", dept:name, title:`${name} no-show rate is ${pct(d.noshow)}`,
+        evidence:`${fmt((d.booked - d.attended) / n)} booked patients a month do not come. Line: ${st.noShow}%.`,
+        impact:(d.noshow - st.noShow / 100) * d.booked / n * rpv, impactNote:`if cut to ${st.noShow}%` });
+    }
+    if (d.conv != null && d.conv * 100 < st.conv){
+      I.push({ key:"conv", sev:"warning", dept:name, title:`Only ${pct(d.conv)} of ${name} inquiries become patients`,
+        evidence:`${fmt(d.inquiries / n)} inquiries a month, ${fmt(d.new_patients / n)} new patients. Line: ${st.conv}%.`,
+        impact:(st.conv / 100 * d.inquiries - d.new_patients) / n * rpv, impactNote:`if conversion reached ${st.conv}%` });
+    }
+  }
+  const payers = {}; S.data.segments.forEach(r => payers[r.payer] = (payers[r.payer] || 0) + (+r.revenue || 0));
+  const pt = sum(Object.values(payers)), topP = Object.entries(payers).sort((a, b) => b[1] - a[1])[0];
+  if (topP && pt && topP[1] / pt * 100 > st.concentration)
+    I.push({ key:"payer", sev:"warning", dept:"All", title:`${topP[0]} brings ${pct(topP[1] / pt)} of revenue`,
+      evidence:`One payer above ${st.concentration}% means one contract change can hit the whole hospital.`, impact:null });
+  const curSet = new Set(cur), src = {}; S.data.sources.filter(r => curSet.has(r.month)).forEach(r => src[r.source] = (src[r.source] || 0) + (+r.new_patients || 0));
+  const stt = sum(Object.values(src)), topS = Object.entries(src).sort((a, b) => b[1] - a[1])[0];
+  if (topS && stt && topS[1] / stt * 100 > st.concentration)
+    I.push({ key:"source", sev:"warning", dept:"All", title:`${pct(topS[1] / stt)} of new patients come from ${topS[0]}`,
+      evidence:`Relying on one source above ${st.concentration}% is risky.`, impact:null });
+  S.data.campaigns.forEach(c => {
+    const ro = c.spend ? c.revenue / c.spend : null;
+    if (ro != null && ro < st.roas)
+      I.push({ key:"camp", sev:"warning", dept:c.department, title:`Campaign "${c.name}" returned ${ro.toFixed(2)}× its cost`,
+        evidence:`${money(c.spend)} spent, ${money(c.revenue)} revenue, ${fmt(c.bookings)} bookings (${c.channel}, ${c.month}).`,
+        impact:c.spend - c.revenue, impactNote:"lost on this campaign (one-off)" });
+  });
+  I.forEach(i => { i.actions = PLAYBOOK[i.key]; i.id = i.key + "|" + i.dept + "|" + i.title; });
+  return I.sort((a, b) => SEVRANK[a.sev] - SEVRANK[b.sev] || (b.impact || 0) - (a.impact || 0));
+}
+function issueHTML(i, compact){
+  const imp = i.impact != null && i.impact > 0 ? `<span class="impact">≈ ${money(i.impact)}${i.key === "camp" ? "" : " / month"}</span> <span>(estimate, ${esc(i.impactNote)})</span>` : "";
+  const sevLabel = { critical:"Critical", warning:"Warning", info:"Opportunity" }[i.sev];
+  return `<div class="issue ${i.sev}">
+    <div class="meta"><span class="pill ${i.sev}">${sevLabel}</span><span>${esc(i.dept)}</span>${imp}</div>
+    <h3>${esc(i.title)}</h3><p class="hint">${esc(i.evidence)}</p>
+    ${compact ? "" : `<ul>${i.actions.map((a, k) => `<li>${esc(a)} <button class="btn small" data-add="${esc(i.id)}" data-k="${k}">+ Plan</button></li>`).join("")}</ul>`}
+  </div>`;
+}
+
+/* ---------- charts ---------- */
+const charts = {};
+function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+function mkChart(id, cfg){
+  if (!window.Chart) { const c = document.getElementById(id); if (c) c.parentElement.innerHTML = '<p class="empty">Chart library did not load. Check your connection and reload.</p>'; return; }
+  if (charts[id]) charts[id].destroy();
+  const ink = css("--muted"), grid = css("--line");
+  Chart.defaults.font.family = css("--body"); Chart.defaults.color = ink;
+  cfg.options = Object.assign({ responsive:true, maintainAspectRatio:false, animation:false,
+    plugins:{ legend:{ labels:{ boxWidth:12, color:ink } }, tooltip:{} } }, cfg.options || {});
+  const sc = cfg.options.scales || {};
+  Object.values(sc).forEach(s => { s.grid = Object.assign({ color:grid }, s.grid || {}); s.ticks = Object.assign({ color:ink }, s.ticks || {}); s.border = { display:false }; });
+  charts[id] = new Chart(document.getElementById(id), cfg);
+}
+function alpha(hex, a){ const h = hex.replace("#",""); const v = parseInt(h.length === 3 ? h.split("").map(x => x + x).join("") : h, 16); return `rgba(${v >> 16 & 255},${v >> 8 & 255},${v & 255},${a})`; }
+
+/* ---------- render: header ---------- */
+function renderHeader(){
+  $("#hospName").textContent = S.settings.hospital || "Hospital Marketing Compass";
+  const b = $("#dataBadge"); b.className = "pill " + (S.demo ? "demo" : "live"); b.textContent = S.demo ? "Demo data" : "Your data";
+  const { cur } = periods(); $("#rangeLabel").textContent = cur.length ? `Period: ${cur[0]} to ${cur[cur.length - 1]}` : "No monthly data yet";
+  $("#periodSel").value = String(S.settings.period);
+  const n = diagnose().filter(i => i.sev !== "info").length; $("#issueCount").textContent = n || "";
+}
+
+/* ---------- render: overview ---------- */
+function deltaHTML(cur, prev, goodUp = true, isPct = false){
+  if (prev == null || cur == null || !isFinite(prev) || !isFinite(cur) || prev === 0) return `<span class="delta flat">no earlier period</span>`;
+  const d = isPct ? (cur - prev) * 100 : (cur / prev - 1) * 100;
+  if (Math.abs(d) < .5) return `<span class="delta flat">flat vs previous</span>`;
+  const up = d > 0, cls = up === goodUp ? (up ? "up-good" : "down-good") : (up ? "up-bad" : "down-bad");
+  return `<span class="delta ${cls}">${up ? "▲" : "▼"} ${Math.abs(d).toFixed(1)}${isPct ? " pts" : "%"} vs previous</span>`;
+}
+function renderOverview(){
+  const { cur, prev, n } = periods(), C = totalOf(aggDepts(cur)), P = totalOf(aggDepts(prev)), hasP = prev.length > 0;
+  const cs = new Set(cur), camp = S.data.campaigns.filter(c => cs.has(c.month)), spend = sum(camp, "spend"), crev = sum(camp, "revenue");
+  const pv = hasP ? P : {};
+  const tiles = [
+    ["Patient visits / month", fmt(C.attended / n), deltaHTML(C.attended, pv.attended)],
+    ["New patients / month", fmt(C.new_patients / n), deltaHTML(C.new_patients, pv.new_patients)],
+    ["Revenue / month", money(C.revenue / n), deltaHTML(C.revenue, pv.revenue)],
+    ["Capacity used", pct(C.util), deltaHTML(C.util, pv.util, true, true)],
+    ["No-show rate", pct(C.noshow, 1), deltaHTML(C.noshow, pv.noshow, false, true)],
+    ["Inquiry → patient", pct(C.conv), deltaHTML(C.conv, pv.conv, true, true)],
+    ["Campaign return", spend ? (crev / spend).toFixed(2) + "×" : "–", `<span class="delta flat">${spend ? money(spend) + " spent" : "no campaigns in period"}</span>`]
+  ];
+  $("#kpis").innerHTML = tiles.map(t => `<div class="kpi"><span class="label">${t[0]}</span><span class="value">${t[1]}</span>${t[2]}</div>`).join("");
+
+  const ms = monthsAll(), A = css("--accent"), M = css("--muted");
+  const byM = ms.map(m => totalOf(aggDepts([m])));
+  mkChart("chTrend", { type:"line", data:{ labels:ms, datasets:[
+    { label:"Attended visits", data:byM.map(x => x.attended), borderColor:A, backgroundColor:alpha(A, .12), fill:true, tension:.3, pointRadius:ms.map((_, i) => i === ms.length - 1 ? 4 : 0), borderWidth:2 },
+    { label:"New patients", data:byM.map(x => x.new_patients), borderColor:M, borderDash:[4,3], tension:.3, pointRadius:0, borderWidth:2 } ] },
+    options:{ interaction:{ mode:"index", intersect:false }, scales:{ x:{ grid:{ display:false } }, y:{ beginAtZero:true } } } });
+
+  const D = Object.values(aggDepts(cur)).sort((a, b) => b.util - a.util), st = S.settings;
+  $("#utilHint").textContent = `Red below ${st.utilLow}%, amber above ${st.utilHigh}%`;
+  mkChart("chUtil", { type:"bar", data:{ labels:D.map(d => d.department), datasets:[{ label:"Capacity used", data:D.map(d => +(d.util * 100).toFixed(1)),
+    backgroundColor:D.map(d => d.util * 100 < st.utilLow ? css("--bad") : d.util * 100 > st.utilHigh ? css("--warn") : A), borderRadius:4 }] },
+    options:{ indexAxis:"y", plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:c => c.raw + "%" } } }, scales:{ x:{ min:0, max:100, ticks:{ callback:v => v + "%" } }, y:{ grid:{ display:false } } } } });
+
+  const src = {}; S.data.sources.filter(r => cs.has(r.month)).forEach(r => src[r.source] = (src[r.source] || 0) + (+r.new_patients || 0));
+  const se = Object.entries(src).sort((a, b) => b[1] - a[1]), stt = sum(se.map(x => x[1]));
+  if (se.length) mkChart("chSources", { type:"bar", data:{ labels:se.map(x => x[0]), datasets:[{ label:"Share", data:se.map(x => +(x[1] / stt * 100).toFixed(1)), backgroundColor:se.map((_, i) => i === 0 ? A : alpha(A, .45)), borderRadius:4 }] },
+    options:{ indexAxis:"y", plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:c => c.raw + "% · " + fmt(se[c.dataIndex][1]) + " patients" } } }, scales:{ x:{ beginAtZero:true, ticks:{ callback:v => v + "%" } }, y:{ grid:{ display:false } } } } });
+  else $("#chSources").parentElement.innerHTML = '<p class="empty">No source data. Add the Sources_Monthly sheet.</p>';
+
+  const top = diagnose().filter(i => i.sev !== "info").slice(0, 4);
+  $("#topIssues").innerHTML = top.length ? top.map(i => issueHTML(i, true)).join("") : '<p class="empty">No problems crossed your thresholds.</p>';
+}
+
+/* ---------- render: problems ---------- */
+function renderProblems(){
+  const f = $("#sevFilter").value, I = diagnose().filter(i => f === "all" || i.sev === f);
+  $("#allIssues").innerHTML = I.length ? I.map(i => issueHTML(i, false)).join("") : '<p class="empty">Nothing here for this filter.</p>';
+  const { cur } = periods(), n = cur.length || 1, st = S.settings;
+  const D = Object.values(aggDepts(cur)).sort((a, b) => b.revenue - a.revenue);
+  const flag = (v, bad) => bad ? `<span style="color:var(--bad);font-weight:600">${v}</span>` : v;
+  $("#deptTable").innerHTML = `<thead><tr><th>Department</th><th class="n">Visits / mo</th><th class="n">New / mo</th><th class="n">Revenue / mo</th><th class="n">Capacity used</th><th class="n">No-show</th><th class="n">Inquiry → patient</th><th class="n">Revenue / visit</th></tr></thead><tbody>` +
+    D.map(d => `<tr><td>${esc(d.department)}</td><td class="n">${fmt(d.attended / n)}</td><td class="n">${fmt(d.new_patients / n)}</td><td class="n">${money(d.revenue / n)}</td>
+      <td class="n">${flag(pct(d.util), d.util * 100 < st.utilLow)}</td><td class="n">${flag(pct(d.noshow, 1), d.noshow * 100 > st.noShow)}</td>
+      <td class="n">${flag(pct(d.conv), d.conv * 100 < st.conv)}</td><td class="n">${money(d.rpv)}</td></tr>`).join("") + "</tbody>";
+}
+
+/* ---------- render: audience ---------- */
+function opportunities(){
+  const { cur } = periods(), C = aggDepts(cur), st = S.settings, g = {};
+  S.data.segments.forEach(r => { const k = r.department + "|" + r.age_group + "|" + r.area;
+    const a = g[k] || (g[k] = { department:r.department, age_group:r.age_group, area:r.area, patients:0, prev:0, revenue:0, payers:{} });
+    a.patients += +r.patients || 0; a.prev += +r.prev_patients || 0; a.revenue += +r.revenue || 0; a.payers[r.payer] = (a.payers[r.payer] || 0) + (+r.patients || 0); });
+  const rows = Object.values(g).filter(a => a.patients >= 30);
+  if (!rows.length) return [];
+  rows.forEach(a => { a.vpp = a.revenue / a.patients; a.growth = a.prev ? a.patients / a.prev - 1 : 0;
+    const u = C[a.department] ? C[a.department].util : null; a.util = u; a.spare = u == null ? .3 : Math.max(0, st.utilHigh / 100 - u) / (st.utilHigh / 100); });
+  const norm = (k) => { const v = rows.map(r => r[k]), lo = Math.min(...v), hi = Math.max(...v); rows.forEach(r => r[k + "N"] = hi > lo ? (r[k] - lo) / (hi - lo) : .5); };
+  norm("vpp"); norm("growth"); norm("spare");
+  rows.forEach(r => r.score = .4 * r.vppN + .35 * r.growthN + .25 * r.spareN);
+  return rows.sort((a, b) => b.score - a.score);
+}
+function renderAudience(){
+  const O = opportunities().slice(0, 8);
+  $("#opps").innerHTML = O.length ? O.map((o, i) => {
+    const topPayer = Object.entries(o.payers).sort((a, b) => b[1] - a[1])[0][0];
+    const why = [];
+    if (o.growthN > .6) why.push(`growing ${pct(o.growth)} year on year`); else if (o.growth < 0) why.push(`shrinking ${pct(-o.growth)}, worth winning back`);
+    if (o.vppN > .6) why.push(`high value: ${money(o.vpp)} per patient`);
+    if (o.spareN > .5 && o.util != null) why.push(`department only ${pct(o.util)} full`);
+    if (!why.length) why.push(`${money(o.vpp)} per patient, ${pct(o.growth)} growth`);
+    return `<div class="opp"><span class="rank">#${i + 1} · score ${Math.round(o.score * 100)}</span>
+      <span class="who">${esc(o.department)} · age ${esc(o.age_group)} · ${esc(o.area)}</span>
+      <div class="scorebar"><i style="width:${Math.round(o.score * 100)}%"></i></div>
+      <span class="why">${esc(why.join("; "))}. ${fmt(o.patients)} patients last year, mostly ${esc(topPayer)}.</span></div>`;
+  }).join("") : '<p class="empty">Add the Segments sheet to get target suggestions.</p>';
+
+  const dimSel = $("#segDim"), dSel = $("#segDept"), names = deptNames(), prevD = dSel.value;
+  dSel.innerHTML = `<option value="">All departments</option>` + names.map(d => `<option>${esc(d)}</option>`).join(""); dSel.value = names.includes(prevD) ? prevD : "";
+  const dim = dimSel.value, rows = S.data.segments.filter(r => !dSel.value || r.department === dSel.value), g = {};
+  rows.forEach(r => { const a = g[r[dim]] || (g[r[dim]] = { k:r[dim], p:0, pp:0, rev:0 }); a.p += +r.patients || 0; a.pp += +r.prev_patients || 0; a.rev += +r.revenue || 0; });
+  const G = Object.values(g).sort((a, b) => dim === "age_group" ? String(a.k).localeCompare(String(b.k), "en", { numeric:true }) : b.p - a.p), tp = sum(G.map(x => x.p));
+  $("#segTable").innerHTML = `<thead><tr><th>${dimSel.options[dimSel.selectedIndex].text}</th><th class="n">Patients</th><th class="n">Share</th><th class="n">Growth</th><th class="n">Revenue</th><th class="n">Per patient</th></tr></thead><tbody>` +
+    G.map(x => { const gr = x.pp ? x.p / x.pp - 1 : null; return `<tr><td>${esc(x.k)}</td><td class="n">${fmt(x.p)}</td><td class="n">${pct(x.p / tp)}</td>
+      <td class="n" style="color:${gr == null ? "inherit" : gr >= 0 ? "var(--good)" : "var(--bad)"}">${gr == null ? "–" : (gr >= 0 ? "+" : "") + pct(gr)}</td><td class="n">${money(x.rev)}</td><td class="n">${money(x.rev / x.p)}</td></tr>`; }).join("") + "</tbody>";
+  const A = css("--accent"), M = css("--muted");
+  mkChart("chSeg", { type:"bar", data:{ labels:G.map(x => x.k), datasets:[
+    { label:"Last 12 months", data:G.map(x => x.p), backgroundColor:A, borderRadius:4 },
+    { label:"12 months before", data:G.map(x => x.pp), backgroundColor:alpha(M, .35), borderRadius:4 } ] },
+    options:{ scales:{ x:{ grid:{ display:false } }, y:{ beginAtZero:true } } } });
+
+  const ages = [...new Set(S.data.segments.map(r => r.age_group))].sort((a, b) => String(a).localeCompare(String(b), "en", { numeric:true }));
+  const hm = {}; S.data.segments.forEach(r => { hm[r.department] = hm[r.department] || {}; hm[r.department][r.age_group] = (hm[r.department][r.age_group] || 0) + (+r.patients || 0); });
+  $("#heat").innerHTML = `<thead><tr><th>Department</th>${ages.map(a => `<th class="n">${esc(a)}</th>`).join("")}</tr></thead><tbody>` +
+    Object.keys(hm).sort().map(d => { const t = sum(Object.values(hm[d])); return `<tr><td>${esc(d)}</td>${ages.map(a => { const v = (hm[d][a] || 0) / (t || 1);
+      return `<td class="h" style="background:${alpha(A, Math.min(.85, v * 1.3))};color:${v > .45 ? css("--accent-ink") : "inherit"}">${v ? pct(v) : "–"}</td>`; }).join("")}</tr>`; }).join("") + "</tbody>";
+}
+
+/* ---------- render: campaigns ---------- */
+function renderCampaigns(){
+  const C = S.data.campaigns, sp = sum(C, "spend"), rv = sum(C, "revenue"), bk = sum(C, "bookings"), ld = sum(C, "leads");
+  $("#campKpis").innerHTML = [["Total spend", money(sp)], ["Revenue from campaigns", money(rv)], ["Return on spend", sp ? (rv / sp).toFixed(2) + "×" : "–"],
+    ["Cost per booking", bk ? money(sp / bk) : "–"], ["Lead → booking", ld ? pct(bk / ld) : "–"]]
+    .map(t => `<div class="kpi"><span class="label">${t[0]}</span><span class="value">${t[1]}</span></div>`).join("");
+  const ch = {}; C.forEach(c => { const a = ch[c.channel] || (ch[c.channel] = { k:c.channel, sp:0, rv:0, bk:0 }); a.sp += +c.spend || 0; a.rv += +c.revenue || 0; a.bk += +c.bookings || 0; });
+  const CH = Object.values(ch).map(a => ({ ...a, ro:a.sp ? a.rv / a.sp : 0, cpb:a.bk ? a.sp / a.bk : 0 })).sort((a, b) => b.ro - a.ro);
+  const A = css("--accent"), B = css("--bad"), st = S.settings;
+  mkChart("chChannel", { type:"bar", data:{ labels:CH.map(x => x.k), datasets:[{ label:"Return (×)", data:CH.map(x => +x.ro.toFixed(2)), backgroundColor:CH.map(x => x.ro < st.roas ? B : A), borderRadius:4 }] },
+    options:{ indexAxis:"y", plugins:{ legend:{ display:false } }, scales:{ x:{ beginAtZero:true, ticks:{ callback:v => v + "×" } }, y:{ grid:{ display:false } } } } });
+  const CP = [...CH].sort((a, b) => a.cpb - b.cpb);
+  $("#cpbHint").textContent = `In ${S.settings.currency}. Lower is better.`;
+  mkChart("chCpb", { type:"bar", data:{ labels:CP.map(x => x.k), datasets:[{ label:"Cost per booking", data:CP.map(x => Math.round(x.cpb)), backgroundColor:alpha(A, .55), borderRadius:4 }] },
+    options:{ indexAxis:"y", plugins:{ legend:{ display:false } }, scales:{ x:{ beginAtZero:true }, y:{ grid:{ display:false } } } } });
+  const rows = [...C].map(c => ({ ...c, ro:c.spend ? c.revenue / c.spend : 0 })).sort((a, b) => b.ro - a.ro);
+  $("#campTable").innerHTML = `<thead><tr><th>Campaign</th><th>Channel</th><th>Department</th><th>Month</th><th class="n">Spend</th><th class="n">Leads</th><th class="n">Bookings</th><th class="n">Cost / booking</th><th class="n">Revenue</th><th class="n">Return</th><th></th></tr></thead><tbody>` +
+    (rows.length ? rows.map(c => `<tr><td>${esc(c.name)}</td><td>${esc(c.channel)}</td><td>${esc(c.department)}</td><td>${esc(c.month)}</td><td class="n">${money(c.spend)}</td><td class="n">${fmt(c.leads)}</td><td class="n">${fmt(c.bookings)}</td>
+      <td class="n">${c.bookings ? money(c.spend / c.bookings) : "–"}</td><td class="n">${money(c.revenue)}</td><td class="n"><span class="pill ${c.ro < st.roas ? "critical" : c.ro >= 3 ? "good" : "info"}">${c.ro.toFixed(2)}×</span></td>
+      <td><button class="btn small danger" data-delcamp="${esc(c.id)}" aria-label="Delete ${esc(c.name)}">Delete</button></td></tr>`).join("") : `<tr><td colspan="11" class="empty">No campaigns yet.</td></tr>`) + "</tbody>";
+  $("#channelList").innerHTML = [...new Set(C.map(c => c.channel).concat(["Instagram","Snapchat","TikTok","Google Search","X (Twitter)","WhatsApp","Doctor referral","Corporate contracts","Events"]))].map(x => `<option value="${esc(x)}">`).join("");
+  $("#cf-dept").innerHTML = deptNames().map(d => `<option>${esc(d)}</option>`).join("");
+}
+
+/* ---------- render: plan ---------- */
+const STATUS = { todo:"To do", doing:"In progress", done:"Done" };
+function renderPlan(){
+  const A = S.actions;
+  $("#planStats").textContent = A.length ? `${A.filter(a => a.status === "done").length} of ${A.length} done` : "";
+  $("#planTable").innerHTML = `<thead><tr><th>Action</th><th>Department</th><th>Owner</th><th>Due</th><th>Status</th><th></th></tr></thead><tbody>` +
+    (A.length ? A.map(a => `<tr><td class="wrap">${esc(a.title)}${a.why ? `<div class="hint">${esc(a.why)}</div>` : ""}</td><td>${esc(a.dept)}</td><td>${esc(a.owner || "–")}</td><td>${esc(a.due || "–")}</td>
+      <td><select data-status="${a.id}" aria-label="Status" class="status-${a.status}">${Object.entries(STATUS).map(([k, v]) => `<option value="${k}" ${k === a.status ? "selected" : ""}>${v}</option>`).join("")}</select></td>
+      <td><button class="btn small danger" data-delact="${a.id}">Delete</button></td></tr>`).join("")
+      : `<tr><td colspan="6" class="empty">No actions yet. Open Problems and press “+ Plan” next to an action.</td></tr>`) + "</tbody>";
+  $("#pf-dept").innerHTML = `<option>All</option>` + deptNames().map(d => `<option>${esc(d)}</option>`).join("");
+}
+
+/* ---------- advisor ---------- */
+let sampleFn = null, abortCtl = null;
+const PRESETS = [
+  "ما أهم 3 مشاكل تسويقية يجب أن أبدأ بها هذا الشهر، ولماذا؟",
+  "أعطني خطة تسويق لمدة 90 يوماً لقسم العلاج الطبيعي",
+  "كيف أوزع ميزانية 50,000 ريال على القنوات الشهر القادم؟",
+  "Which campaigns should I stop, and what should replace them?",
+  "اقترح عروض باقات للشركات القريبة"
+];
+function contextSummary(){
+  const { cur, prev, n } = periods(), C = aggDepts(cur), T = totalOf(C), P = totalOf(aggDepts(prev));
+  const dep = Object.values(C).map(d => ({ dept:d.department, visits_per_month:Math.round(d.attended / n), new_per_month:Math.round(d.new_patients / n), revenue_per_month:Math.round(d.revenue / n),
+    capacity_used:+(d.util * 100).toFixed(1), no_show:+(d.noshow * 100).toFixed(1), inquiry_conversion:+(d.conv * 100).toFixed(1), revenue_per_visit:Math.round(d.rpv) }));
+  const src = {}; const cs = new Set(cur); S.data.sources.filter(r => cs.has(r.month)).forEach(r => src[r.source] = (src[r.source] || 0) + (+r.new_patients || 0));
+  const ch = {}; S.data.campaigns.forEach(c => { const a = ch[c.channel] || (ch[c.channel] = { spend:0, revenue:0, bookings:0 }); a.spend += +c.spend; a.revenue += +c.revenue; a.bookings += +c.bookings; });
+  return {
+    hospital:S.settings.hospital, currency:S.settings.currency, data_is_demo:S.demo, period:`${cur[0]} to ${cur[cur.length - 1]} (${n} months), compared with previous ${n} months`,
+    totals:{ visits_per_month:Math.round(T.attended / n), visits_change_pct:P.attended ? +((T.attended / P.attended - 1) * 100).toFixed(1) : null, capacity_used:+(T.util * 100).toFixed(1), no_show:+(T.noshow * 100).toFixed(1) },
+    departments:dep, new_patient_sources:src, channels:ch,
+    campaigns:S.data.campaigns.map(c => ({ name:c.name, channel:c.channel, dept:c.department, month:c.month, spend:c.spend, bookings:c.bookings, revenue:c.revenue })),
+    detected_problems:diagnose().map(i => ({ severity:i.sev, title:i.title, evidence:i.evidence, est_monthly_impact:i.impact ? Math.round(i.impact) : null })),
+    top_target_segments:opportunities().slice(0, 10).map(o => ({ dept:o.department, age:o.age_group, area:o.area, patients:o.patients, growth_pct:+(o.growth * 100).toFixed(0), value_per_patient:Math.round(o.vpp), dept_capacity_used:o.util == null ? null : +(o.util * 100).toFixed(0) })),
+    open_actions:S.actions.filter(a => a.status !== "done").map(a => a.title)
+  };
+}
+async function ask(q){
+  if (!sampleFn || !q.trim()) return;
+  const out = $("#answer"); out.dir = /[؀-ۿ]/.test(q) ? "rtl" : "ltr"; out.textContent = "Thinking…";
+  $("#askBtn").disabled = true; $("#stopBtn").hidden = false; abortCtl = new AbortController();
+  const prompt = `You are a practical marketing advisor for a private hospital in Saudi Arabia. Answer the marketer's question using ONLY the data summary below plus sound hospital-marketing practice.
+Rules:
+- Reply in the same language as the question (Arabic or English). Plain text, short headings and numbered points are fine, no markdown tables.
+- Be specific: name departments, segments, channels and numbers from the data. Show the arithmetic for any figure you compute, with units (${S.settings.currency}).
+- Label anything not directly in the data as an assumption or estimate.
+- Prefer actions that fill free capacity before ones that add demand to full departments.
+- Respect Saudi rules: patient messages only to people who consented (Personal Data Protection Law), health advertising must follow Ministry of Health rules; mention this only where it matters.
+- End with: the decision you recommend, the main risk, and the first action for this week.
+${S.demo ? "- Note once that the numbers are demo data." : ""}
+
+DATA SUMMARY (JSON):
+${JSON.stringify(contextSummary())}
+
+QUESTION:
+${q}`;
+  try {
+    const res = await sampleFn(prompt, { signal:abortCtl.signal, modelTier:"default", cache:false, onText:({ text }) => { out.textContent = text || "Thinking…"; } });
+    out.textContent = res.text + (res.truncated ? "\n\n[Answer was cut short. Ask a narrower question.]" : "");
+  } catch(e){
+    if (e && e.code === "not_granted"){ $("#advisorOn").hidden = true; $("#advisorOff").hidden = false; out.textContent = ""; }
+    else if (e && e.code === "rate_limited") out.textContent = "Too many questions in a short time. Wait a minute and try again.";
+    else if (e && e.name === "AbortError") out.textContent += "\n\n[Stopped]";
+    else out.textContent = "The advisor could not answer: " + (e && e.message ? e.message : "unknown error") + ". Try again.";
+  } finally { $("#askBtn").disabled = false; $("#stopBtn").hidden = true; abortCtl = null; }
+}
+
+/* ---------- data import / export ---------- */
+let downloadsApi = null;
+function normMonth(v){
+  if (v instanceof Date && !isNaN(v)) return `${v.getFullYear()}-${String(v.getMonth() + 1).padStart(2,"0")}`;
+  if (typeof v === "number" && v > 20000 && v < 80000){ const d = new Date(Math.round((v - 25569) * 864e5)); return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2,"0")}`; }
+  const s = String(v ?? "").trim(); let m = s.match(/^(\d{4})[-\/.](\d{1,2})/); if (m) return `${m[1]}-${m[2].padStart(2,"0")}`;
+  m = s.match(/^(\d{1,2})[-\/.](\d{4})$/); if (m) return `${m[2]}-${m[1].padStart(2,"0")}`;
+  m = s.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})$/); if (m) return `${m[3]}-${m[2].padStart(2,"0")}`;
+  return s;
+}
+function normalize(key, rows){
+  const sc = SCHEMA[key], errs = [];
+  const mapped = rows.map(r => { const o = {}; for (const [k, v] of Object.entries(r)) o[String(k).trim().toLowerCase().replace(/[\s\-]+/g, "_")] = v; return o; });
+  if (!mapped.length) return { rows:[], errs:[`${sc.sheet}: no rows found.`] };
+  const missing = sc.cols.filter(c => !(c in mapped[0]) && c !== "id");
+  if (missing.length) return { rows:[], errs:[`${sc.sheet}: missing column(s) ${missing.join(", ")}. Expected: ${sc.cols.join(", ")}.`] };
+  let bad = 0;
+  const out = mapped.map(o => { const r = {}; sc.cols.forEach(c => {
+      let v = o[c];
+      if (sc.nums.includes(c)){ v = typeof v === "number" ? v : parseFloat(String(v ?? "").replace(/[,\s]|SAR|ر\.?س/gi, "")); if (!isFinite(v)){ v = 0; bad++; } }
+      else if (c === "month") v = normMonth(v); else v = String(v ?? "").trim();
+      r[c] = v; });
+    if (key === "campaigns") r.id = uid();
+    return r; }).filter(r => sc.cols.some(c => !sc.nums.includes(c) && r[c]));
+  if (bad) errs.push(`${sc.sheet}: ${bad} number cell(s) were empty or not numbers and were set to 0.`);
+  if (sc.cols.includes("month")){ const badM = out.filter(r => !/^\d{4}-\d{2}$/.test(r.month)).length; if (badM) errs.push(`${sc.sheet}: ${badM} row(s) have a month that is not YYYY-MM.`); }
+  return { rows:out, errs };
+}
+async function handleFile(file){
+  const log = $("#importLog"); log.hidden = false; log.textContent = "Reading " + file.name + "…";
+  if (!window.XLSX){ log.textContent = "The Excel reader did not load. Check your connection and reload the page."; return; }
+  try {
+    const buf = await file.arrayBuffer(), wb = XLSX.read(buf, { type:"array", cellDates:true }), target = $("#importTarget").value, msgs = [];
+    const plan = [];
+    if (target === "auto"){
+      for (const [key, sc] of Object.entries(SCHEMA)){ const name = wb.SheetNames.find(s => s.trim().toLowerCase() === sc.sheet.toLowerCase()); if (name) plan.push([key, name]); }
+      if (!plan.length){ log.textContent = `No sheet names matched (${Object.values(SCHEMA).map(s => s.sheet).join(", ")}). Rename the sheets or choose which dataset to import into.`; return; }
+    } else plan.push([target, wb.SheetNames[0]]);
+    let changed = 0;
+    for (const [key, name] of plan){
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], { defval:"", raw:true });
+      const { rows:out, errs } = normalize(key, rows); msgs.push(...errs);
+      if (out.length){ S.data[key] = out; changed++; msgs.unshift(`✓ ${SCHEMA[key].sheet}: ${out.length} rows loaded.`); }
+    }
+    if (changed){ S.demo = false; save(); renderAll(); }
+    log.textContent = msgs.join("\n"); log.style.whiteSpace = "pre-wrap";
+  } catch(e){ log.textContent = "Could not read this file: " + e.message; }
+  $("#fileIn").value = "";
+}
+async function download(blankOnly){
+  if (!window.XLSX){ toast("Excel library did not load."); return; }
+  const wb = XLSX.utils.book_new();
+  const readme = [["Hospital Marketing Compass — data template"], [""], ["Fill each sheet with your hospital's numbers. Keep the column names exactly as they are."], ["Use grouped numbers only. Never put patient names, file numbers or phone numbers in this file."], [""], ["Sheet", "What it holds", "Columns"]]
+    .concat(Object.values(SCHEMA).map(s => [s.sheet, s.desc, s.cols.join(", ")]));
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(readme), "README");
+  for (const [key, sc] of Object.entries(SCHEMA)){
+    const rows = blankOnly ? [] : S.data[key].map(r => { const o = {}; sc.cols.forEach(c => o[c] = r[c]); return o; });
+    XLSX.utils.book_append_sheet(wb, rows.length ? XLSX.utils.json_to_sheet(rows, { header:sc.cols }) : XLSX.utils.aoa_to_sheet([sc.cols]), sc.sheet);
+  }
+  const buf = XLSX.write(wb, { bookType:"xlsx", type:"array" });
+  const fname = blankOnly ? "hospital-marketing-template.xlsx" : "hospital-marketing-data.xlsx";
+  if (!downloadsApi){
+    try { const url = URL.createObjectURL(new Blob([buf], { type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
+      const a = document.createElement("a"); a.href = url; a.download = fname; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000); toast("File downloaded."); }
+    catch(e){ toast("Could not download the file."); }
+    return;
+  }
+  try { await downloadsApi.save({ filename: blankOnly ? "hospital-marketing-template.xlsx" : "hospital-marketing-data.xlsx", data:buf }); toast("File saved."); }
+  catch(e){ if (e && e.code !== "declined") toast("Could not save the file (" + (e.code || "error") + ")."); }
+}
+function renderData(){
+  $("#schemaTable").innerHTML = `<thead><tr><th>Sheet</th><th>Rows now</th><th>Columns</th><th>What it holds</th></tr></thead><tbody>` +
+    Object.entries(SCHEMA).map(([k, s]) => `<tr><td><b>${s.sheet}</b></td><td class="n">${fmt(S.data[k].length)}</td><td class="wrap"><code>${s.cols.join(", ")}</code></td><td class="wrap">${esc(s.desc)}</td></tr>`).join("") + "</tbody>";
+  const st = S.settings; ["hospital","currency","utilLow","utilHigh","noShow","conv","decline","concentration","roas"].forEach(k => { $("#s-" + k).value = st[k]; });
+}
+
+/* ---------- wiring ---------- */
+const RENDER = { overview:renderOverview, problems:renderProblems, audience:renderAudience, campaigns:renderCampaigns, plan:renderPlan, advisor:() => {}, data:renderData };
+let active = "overview";
+function show(tab){
+  if (!RENDER[tab]) tab = "overview";
+  active = tab;
+  document.querySelectorAll("nav.tabs button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.tab === tab)));
+  document.querySelectorAll("section.tab").forEach(s => s.classList.toggle("active", s.id === "tab-" + tab));
+  try { RENDER[tab](); } catch(e){ console.error(e); }
+  if (location.hash.slice(1) !== tab) history.replaceState(null, "", tab === "overview" ? location.pathname + location.search : "#" + tab);
+}
+function renderAll(){ renderHeader(); show(active); }
+
+document.querySelector("nav.tabs").addEventListener("click", e => { const b = e.target.closest("button[data-tab]"); if (b) show(b.dataset.tab); });
+document.addEventListener("click", e => {
+  const g = e.target.closest("[data-goto]"); if (g){ show(g.dataset.goto); window.scrollTo(0, 0); return; }
+  const add = e.target.closest("[data-add]");
+  if (add){ const i = diagnose().find(x => x.id === add.dataset.add); if (!i) return; const title = i.actions[+add.dataset.k];
+    if (S.actions.some(a => a.title === title && a.dept === i.dept)){ toast("Already in the plan."); return; }
+    S.actions.push({ id:uid(), title, dept:i.dept, owner:"", due:"", status:"todo", why:i.title }); save(); renderHeader(); add.textContent = "✓ Added"; add.disabled = true; toast("Added to the action plan."); return; }
+  const dc = e.target.closest("[data-delcamp]"); if (dc){ S.data.campaigns = S.data.campaigns.filter(c => c.id !== dc.dataset.delcamp); save(); renderAll(); return; }
+  const da = e.target.closest("[data-delact]"); if (da){ S.actions = S.actions.filter(a => a.id !== da.dataset.delact); save(); renderPlan(); return; }
+});
+document.addEventListener("change", e => { const s = e.target.closest("[data-status]"); if (s){ const a = S.actions.find(x => x.id === s.dataset.status); if (a){ a.status = s.value; save(); renderPlan(); } } });
+$("#periodSel").addEventListener("change", e => { S.settings.period = +e.target.value; save(); renderAll(); });
+$("#sevFilter").addEventListener("change", renderProblems);
+$("#segDim").addEventListener("change", renderAudience);
+$("#segDept").addEventListener("change", renderAudience);
+$("#campForm").addEventListener("submit", e => { e.preventDefault();
+  const v = id => $("#cf-" + id).value;
+  S.data.campaigns.push({ id:uid(), name:v("name").trim(), channel:v("channel").trim(), department:v("dept"), month:normMonth(v("month")), spend:+v("spend"), leads:+v("leads"), bookings:+v("bookings"), revenue:+v("revenue") });
+  save(); e.target.reset(); renderAll(); toast("Campaign added."); });
+$("#planForm").addEventListener("submit", e => { e.preventDefault();
+  S.actions.push({ id:uid(), title:$("#pf-title").value.trim(), dept:$("#pf-dept").value, owner:$("#pf-owner").value.trim(), due:$("#pf-due").value, status:"todo" });
+  save(); e.target.reset(); renderPlan(); toast("Action added."); });
+$("#setForm").addEventListener("submit", e => { e.preventDefault();
+  ["utilLow","utilHigh","noShow","conv","decline","concentration","roas"].forEach(k => { const v = parseFloat($("#s-" + k).value); if (isFinite(v)) S.settings[k] = v; });
+  S.settings.hospital = $("#s-hospital").value.trim() || "My Hospital"; S.settings.currency = $("#s-currency").value.trim() || "SAR";
+  save(); renderHeader(); toast("Settings saved."); });
+$("#fileIn").addEventListener("change", e => { const f = e.target.files[0]; if (f) handleFile(f); });
+$("#dlTemplate").addEventListener("click", () => download(false));
+$("#dlBlank").addEventListener("click", () => download(true));
+let resetArmed = false;
+$("#resetDemo").addEventListener("click", e => {
+  if (!resetArmed){ resetArmed = true; e.target.textContent = "Press again to replace all data with demo data"; setTimeout(() => { resetArmed = false; e.target.textContent = "Reset to demo data"; }, 4000); return; }
+  resetArmed = false; e.target.textContent = "Reset to demo data";
+  S = { settings:{ ...DEFAULT_SETTINGS }, data:genDemo(), actions:S.actions, demo:true }; save(); renderAll(); toast("Demo data restored. Your action plan was kept."); });
+$("#presets").innerHTML = PRESETS.map(p => `<button class="chip" type="button" dir="auto">${esc(p)}</button>`).join("");
+$("#presets").addEventListener("click", e => { const c = e.target.closest(".chip"); if (c){ $("#askBox").value = c.textContent; ask(c.textContent); } });
+$("#askBtn").addEventListener("click", () => ask($("#askBox").value));
+$("#stopBtn").addEventListener("click", () => abortCtl && abortCtl.abort());
+window.addEventListener("hashchange", () => show(location.hash.slice(1) || "overview"));
+const mq = window.matchMedia ? matchMedia("(prefers-color-scheme: dark)") : null;
+if (mq && mq.addEventListener) mq.addEventListener("change", () => show(active));
+new MutationObserver(() => show(active)).observe(document.documentElement, { attributes:true, attributeFilter:["data-theme"] });
+
+renderHeader();
+show(location.hash.slice(1) || "overview");
+
+/* offline / install support (works on GitHub Pages; skipped inside Claude) */
+if ("serviceWorker" in navigator && location.protocol === "https:" && !location.hostname.endsWith("claude.ai")){
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
+/* capabilities: light up when available (only inside Claude) */
+(async () => {
+  $("#advisorOn").hidden = true; $("#advisorOff").hidden = false;
+  try {
+    if (window.claude && typeof claude.use === "function"){
+      const [smp, dl] = await Promise.all([claude.use("sample").catch(() => null), claude.use("downloads").catch(() => null)]);
+      sampleFn = smp; downloadsApi = dl;
+    }
+  } catch(e){}
+  if (sampleFn){ $("#advisorOn").hidden = false; $("#advisorOff").hidden = true; }
+  $("#dlNote").textContent = "The full template holds the current numbers, so you can see the expected format, then replace them.";
+})();
+</script>
+</body>
+</html>
